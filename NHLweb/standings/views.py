@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.template import loader
 
 from .models import Team
 
@@ -18,6 +19,17 @@ def home(request):
     #Retrieve all teams and order them by points.
     #THIS WILL CHANGE LATER WHEN THERE IS A BETTER ORGANIZATION SYSTEM
     team_list = Team.objects.order_by("-points")
-    output = ", ".join([str(q.name) + " " +  str(q.points) for q in team_list])
     
-    return HttpResponse(output)
+    template = loader.get_template("standings/league.html")
+    
+    context = {
+        "team_list": team_list,
+        }
+    
+    return HttpResponse(template.render(context, request))
+    
+    
+    
+    # output = ", ".join([str(q.name) + " " +  str(q.points) for q in team_list])
+    
+    # return HttpResponse(output)

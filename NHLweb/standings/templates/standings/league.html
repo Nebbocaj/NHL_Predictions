@@ -1,0 +1,9 @@
+{% if team_list %}
+    <ul>
+    {% for team in team_list %}
+        <li>{{ team.name }} {{team.points}}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No teams are available.</p>
+{% endif %}
