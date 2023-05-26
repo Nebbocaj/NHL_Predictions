@@ -10,12 +10,14 @@ def home(request):
     all_teams = Team.objects.all()
     
     #Make sure that there are exactly 32 teams at all times.
-    if len(all_teams) != 32:
-        all_teams.delete()
-        for t in get_teams():
-            new_team = Team(name = t[0], points = t[1])
-            new_team.save()
-            
+    #if len(all_teams) != 32:
+    all_teams.delete()
+    for t in get_teams():
+        new_team = Team(name = t[0], wins = t[1], losses = t[2], otl = t[3], 
+                        points = t[4], pointPer = round(t[5],3), rw = t[6], row = t[7],
+                        goalsFor = t[8], goalsAgainst = t[9], goalDiff = t[10])
+        new_team.save()
+
     #Retrieve all teams and order them by points.
     #THIS WILL CHANGE LATER WHEN THERE IS A BETTER ORGANIZATION SYSTEM
     team_list = Team.objects.order_by("-points")

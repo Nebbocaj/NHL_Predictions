@@ -13,15 +13,15 @@ def get_teams():
         for i in range(8):
             
             team_list.append([data["records"][div]["teamRecords"][i]["team"]["name"],
-                              data["records"][div]["teamRecords"][i]["points"]])
-            # print(data["records"][div]["teamRecords"][i]["team"]["name"],
-            #       data["records"][div]["teamRecords"][i]["leagueRecord"]["wins"],
-            #       data["records"][div]["teamRecords"][i]["leagueRecord"]["losses"],
-            #       data["records"][div]["teamRecords"][i]["leagueRecord"]["ot"],
-            #       data["records"][div]["teamRecords"][i]["points"],
-            #       data["records"][div]["teamRecords"][i]["regulationWins"],
-            #       data["records"][div]["teamRecords"][i]["row"],
-            #       data["records"][div]["teamRecords"][i]["goalsScored"],
-            #       data["records"][div]["teamRecords"][i]["goalsAgainst"],
-            #       data["records"][div]["teamRecords"][i]["goalsScored"] - data["records"][div]["teamRecords"][i]["goalsAgainst"])
+                              data["records"][div]["teamRecords"][i]["leagueRecord"]["wins"],
+                              data["records"][div]["teamRecords"][i]["leagueRecord"]["losses"],
+                              data["records"][div]["teamRecords"][i]["leagueRecord"]["ot"],
+                              data["records"][div]["teamRecords"][i]["points"],
+                              data["records"][div]["teamRecords"][i]["pointsPercentage"],
+                              data["records"][div]["teamRecords"][i]["regulationWins"],
+                              data["records"][div]["teamRecords"][i]["row"],
+                              data["records"][div]["teamRecords"][i]["goalsScored"],
+                              data["records"][div]["teamRecords"][i]["goalsAgainst"],
+                              data["records"][div]["teamRecords"][i]["goalsScored"] - data["records"][div]["teamRecords"][i]["goalsAgainst"]])
+
     return team_list

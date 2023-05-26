@@ -1,12 +1,70 @@
 <!DOCTYPE html>
 <html>
-<body>
+
+<head>
+  <title>NHL Predictions</title>
+</head>
+
+<style>
+table, th, td {
+  border:1px solid black;
+  border-collapse: collapse;
+}
+th {
+  text-align: left;
+}
+tr:nth-child(even) {
+  background-color: #D6EEEE;
+}
+tr:nth-child(odd) {
+  background-color: #FFFFFF;
+}
+.table-container {
+  display: flex;
+  justify-content: center;
+}
+</style>
+
+<body style="background-color: AntiqueWhite">
 {% if team_list %}
-    <ul>
-    {% for team in team_list %}
-        <li>{{ team.name }} {{team.points}}</a></li>
-    {% endfor %}
-    </ul>
+    <div class="table-container">
+        <table>
+        <tr style="height:25px">
+            <th>Team Name</th>
+            <th style="text-align: center;">Wins</th>
+            <th style="text-align: center;">Losses</th>
+            <th style="text-align: center;">OTL</th>
+            <th style="text-align: center;">Points</th>
+            <th style="text-align: center;">Percent</th>
+            <th style="text-align: center;">RW</th>
+            <th style="text-align: center;">ROW</th>
+            <th style="text-align: center;">GF</th>
+            <th style="text-align: center;">GA</th>
+            <th style="text-align: center;">Diff</th>
+        </tr>
+        {% for team in team_list %}
+        <tr style="height:25px">
+            <td style="width:175px">{{team.name}}</td>
+            <td style="text-align: center; width:70px">{{team.wins}}</td>
+            <td style="text-align: center; width:70px">{{team.losses}}</td>
+            <td style="text-align: center; width:70px">{{team.otl}}</td>
+            <td style="text-align: center; width:70px">{{team.points}}</td>
+            <td style="text-align: center; width:70px">{{team.pointPer}}</td>
+            <td style="text-align: center; width:70px">{{team.rw}}</td>
+            <td style="text-align: center; width:70px">{{team.row}}</td>
+            <td style="text-align: center; width:70px">{{team.goalsFor}}</td>
+            <td style="text-align: center; width:70px">{{team.goalsAgainst}}</td>
+            
+            {% if team.goalDiff >= 0 %}
+                <td style="text-align: center; width:70px; color:green">+{{team.goalDiff}} </td>
+            {% else %}
+                <td style="text-align: center; width:70px; color:red">{{team.goalDiff}} </td>
+            {% endif %}
+            
+        </tr>
+        {% endfor %}
+        </table>
+    </div>
 {% else %}
     <p>No teams are available.</p>
 {% endif %}
