@@ -4,6 +4,6 @@ This is a website for making various predictions for the National Hockey League 
 
 ## Current Goals
 
-1. Create a basic standings page that simple lists out the current NHL standings given the NHL Api data.
+1. Build an algorithm that takes a year and day as parameters and tracks the team statistics up until that day. This function will be used in the next steps.
 2. Build an algorithm that can provide the chances that a team will make the playoffs if there is a 50% chance that any team can win any game.
 3. Look into the most efficient ways to meassure a "power level" for teams to give better accuracies.
