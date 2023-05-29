@@ -2,6 +2,8 @@ import requests
 import json
 
 API_URL = "https://statsapi.web.nhl.com/api/v1"
+
+#Returns every team and their current place in the standings
 def get_teams():
     
     response = requests.get(API_URL + "/standings", params={"Content-Type": "application/json"})
@@ -25,3 +27,18 @@ def get_teams():
                               data["records"][div]["teamRecords"][i]["goalsScored"] - data["records"][div]["teamRecords"][i]["goalsAgainst"]])
 
     return team_list
+
+#Returns every team and their place in the standings as of the specified time.
+def get_old_standings(year, month, day):
+    
+    response = requests.get(API_URL + "/schedule?startDate=2021-07-31&endDate=2021-10-31", params={"Content-Type": "application/json"})
+    data = response.json()
+    
+    for date in data["dates"]:
+        print("--- Date:", date["date"])
+        
+        for game in date["games"]:
+            print(".", game["teams"]["away"]["team"]["name"], "﹒", game["teams"]["home"]["team"]["name"], 
+                  "/", f"{game['teams']['away']['score']}:{game['teams']['home']['score']}", "/", game["status"]["detailedState"])
+    
+get_old_standings(2023, 5, 28)
