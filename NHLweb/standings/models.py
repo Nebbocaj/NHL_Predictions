@@ -13,3 +13,6 @@ class Team(models.Model):
     goalsFor = models.IntegerField(default = 0)
     goalsAgainst = models.IntegerField(default = 0)
     goalDiff = models.IntegerField(default = 0)
+    
+
+#NEED TO CREATE A TABLE THAT JUST STORES HISTORICAL DATA FOR EACH TEAM
