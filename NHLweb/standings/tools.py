@@ -33,10 +33,54 @@ def get_teams():
 def get_old_standings(year, month, day):
     
     df = initialize_dataframe()
-    #/api/v1/schedule?startDate=2021-07-31&endDate=2021-10-31
-    response = requests.get(API_URL + "/api/v1/schedule?startDate=2022-12-29&endDate=2022-12-29", params={"Content-Type": "application/json"})
-    data = response.json()
     
+    if month > 8: 
+        start = year
+        end = year + 1
+    else:
+        start = year - 1
+        end = year
+    
+    oldC = 0
+    newC = 0
+    
+    #Get past data from API
+    response_past = requests.get(API_URL + "/api/v1/schedule?startDate=" + str(start) + "-8-1&endDate=" 
+                            + str(year) + "-" + str(month) + "-" + str(day), 
+                            params={"Content-Type": "application/json"})
+    data_past = response_past.json()
+    
+    #Get the future schedule from API
+    response_future = requests.get(API_URL + "/api/v1/schedule?startDate=" 
+                                   + str(year) + "-" + str(month) + "-" + str(day) + "&endDate=" + 
+                                   str(end) + "-7-31", params={"Content-Type": "application/json"})
+    data_future = response_future.json()
+    
+    df = calculate_standings(data_past, df) 
+   
+
+    #Print out the table 
+    for row in df.values.tolist():
+        print(row)
+        
+    
+    schedule = []
+    for date in data_future["dates"][1:]:
+        for game in date["games"]:
+            if game['gameType'] == 'R':
+                away_team = game["teams"]["away"]["team"]["name"]
+                home_team = game["teams"]["home"]["team"]["name"]
+                schedule.append([away_team, home_team])
+                newC += 1
+                  
+    print(oldC, newC, oldC + newC)
+    print(len(schedule), len(schedule[0]))
+        
+#Calcuate the standings using the data chunk from a specified time period
+#return the compiled dataframe
+def calculate_standings(data, df):
+    
+    #Loop through all dates from the beginning of the season until the specified date
     for date in data["dates"]:
         print("--- Date:", date["date"])
         for game in date["games"]:
@@ -49,7 +93,7 @@ def get_old_standings(year, month, day):
                 away_score = game['teams']['away']['score']
                 game_link = game["link"]
                 game_status = get_game_status(game_link)
-                print(".", away_team, "﹒", home_team, "/", away_score, ":", home_score, " ", game_status)
+                #print(".", away_team, "﹒", home_team, "/", away_score, ":", home_score, " ", game_status)
                     
                 #Get rows for each playing team
                 home_row = df.index[df['name'] == home_team][0]
@@ -87,7 +131,7 @@ def get_old_standings(year, month, day):
                     else:
                         print("ERROR")
                     
-                #Adjust wins iof the away team won
+                #Adjust wins of the away team won
                 elif away_score > home_score:
                     df.at[away_row, 'wins'] += 1
                     df.at[away_row, 'points'] += 2
@@ -109,11 +153,12 @@ def get_old_standings(year, month, day):
                     print("ERROR")
                     
                 #calculate point percentage
-                df.at[home_row, "pointsPer"] = float(df.at[home_row, "points"]) / float(2 * df.at[home_row, "played"])
-                df.at[away_row, "pointsPer"] = float(df.at[away_row, "points"]) / float(2 * df.at[away_row, "played"])
+                df.at[home_row, "pointsPer"] = round(float(df.at[home_row, "points"]) / float(2 * df.at[home_row, "played"]), 3)
+                df.at[away_row, "pointsPer"] = round(float(df.at[away_row, "points"]) / float(2 * df.at[away_row, "played"]), 3)
+                
+    return df
 
-    for row in df.values.tolist():
-        print(row)
+
 #Initializes a temporary dataframe to keep track of the team data
 def initialize_dataframe():
     
@@ -131,8 +176,10 @@ def initialize_dataframe():
     
     df = pd.DataFrame(columns = labels)
     
+    #Set the name of each team
     df['name'] = team_names
     
+    #Initialize all other stats to 0
     for label in labels[1:]:
         df[label] = [0 for _ in team_names]
     
@@ -156,4 +203,4 @@ def get_game_status(link):
     #return proper status
     return status
     
-get_old_standings(2023, 5, 28)
+get_old_standings(2022, 11, 15)
