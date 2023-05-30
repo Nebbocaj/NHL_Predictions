@@ -1,10 +1,12 @@
 import requests
 import pandas as pd
-import json
+import random
 
 API_URL = "https://statsapi.web.nhl.com"
 
-#Returns every team and their current place in the standings
+'''
+Returns every team and their current place in the standings
+'''
 def get_teams():
     
     response = requests.get(API_URL + "/api/v1/standings", params={"Content-Type": "application/json"})
@@ -29,7 +31,9 @@ def get_teams():
 
     return team_list
 
-#Returns every team and their place in the standings as of the specified time.
+'''
+Returns every team and their place in the standings as of the specified time.
+'''
 def get_old_standings(year, month, day):
     
     df = initialize_dataframe()
@@ -41,8 +45,6 @@ def get_old_standings(year, month, day):
         start = year - 1
         end = year
     
-    oldC = 0
-    newC = 0
     
     #Get past data from API
     response_past = requests.get(API_URL + "/api/v1/schedule?startDate=" + str(start) + "-8-1&endDate=" 
@@ -61,9 +63,10 @@ def get_old_standings(year, month, day):
 
     #Print out the table 
     for row in df.values.tolist():
-        print(row)
+        print(row[0], row[5])
         
-    
+    print("\n\n")
+    #Get he future schedule 
     schedule = []
     for date in data_future["dates"][1:]:
         for game in date["games"]:
@@ -71,18 +74,104 @@ def get_old_standings(year, month, day):
                 away_team = game["teams"]["away"]["team"]["name"]
                 home_team = game["teams"]["home"]["team"]["name"]
                 schedule.append([away_team, home_team])
-                newC += 1
+                
+    df = simulate_season(df, schedule)
+    
+    #Print out the table 
+    for row in df.values.tolist():
+        print(row[0], row[5])
                   
-    print(oldC, newC, oldC + newC)
-    print(len(schedule), len(schedule[0]))
+'''
+Simulates the remaining part of the NHL season from a given point.
+Takes the current standings and future schedule as input and returns a 
+single possible outcome based off of a teams win probabilities
+'''
+def simulate_season(df, schedule):
+    
+    #Odd of a game going to overtime
+    ot_odds = 0.25
+    
+    #Odds of a game going to shootout
+    so_odds = 0.08
+    
+    #Odds that the home team will win
+    #WILL CHANGE ONCE AN ELO SYSTEM IS IMPLEMENTED
+    home_win = 0.5
+    
+    #loop through every future game of the season and
+    #simulate results via the random variables
+    for game in schedule:
+        away_team = game[0]
+        home_team = game[1]
         
-#Calcuate the standings using the data chunk from a specified time period
-#return the compiled dataframe
+        #Get rows for each playing team
+        home_row = df.index[df['name'] == home_team][0]
+        away_row = df.index[df['name'] == away_team][0]
+        
+        #determine if a game goes to overtime or a shootout froma random value
+        type_event = random.uniform(0,1)
+        
+        #determine the winner from a random value
+        win_event = random.uniform(0,1)
+        
+        #Increase the team's games played
+        df.at[home_row, 'played'] += 1
+        df.at[away_row, 'played'] += 1
+        
+        #If the event is a shootout...
+        if type_event <= so_odds:
+            if win_event < home_win:
+                df.at[home_row, 'wins'] += 1
+                df.at[home_row, 'points'] += 2
+                df.at[away_row, 'otl'] += 1
+                df.at[away_row, 'points'] += 1
+            else:
+                df.at[away_row, 'wins'] += 1
+                df.at[away_row, 'points'] += 2
+                df.at[home_row, 'otl'] += 1
+                df.at[home_row, 'points'] += 1
+                
+        #if the event is overtime...
+        elif type_event <= ot_odds:
+            if win_event < home_win:
+                df.at[home_row, 'wins'] += 1
+                df.at[home_row, 'points'] += 2
+                df.at[home_row, 'row'] += 1
+                df.at[away_row, 'otl'] += 1
+                df.at[away_row, 'points'] += 1
+            else:
+                df.at[away_row, 'wins'] += 1
+                df.at[away_row, 'points'] += 2
+                df.at[away_row, 'row'] += 1
+                df.at[home_row, 'otl'] += 1
+                df.at[home_row, 'points'] += 1
+           
+        #if the event is regulation...
+        else:
+            if win_event < home_win:
+                df.at[home_row, 'wins'] += 1
+                df.at[home_row, 'points'] += 2
+                df.at[home_row, 'rw'] += 1
+                df.at[home_row, 'row'] += 1
+                df.at[away_row, 'losses'] += 1
+            else:
+                df.at[away_row, 'wins'] += 1
+                df.at[away_row, 'points'] += 2
+                df.at[away_row, 'rw'] += 1
+                df.at[away_row, 'row'] += 1
+                df.at[home_row, 'losses'] += 1
+    return df
+
+
+'''        
+Calcuate the standings using the data chunk from a specified time period
+return the compiled dataframe
+'''
 def calculate_standings(data, df):
     
     #Loop through all dates from the beginning of the season until the specified date
     for date in data["dates"]:
-        print("--- Date:", date["date"])
+        print(date["date"])
         for game in date["games"]:
             if game['gameType'] == 'R':
                 
@@ -108,9 +197,6 @@ def calculate_standings(data, df):
                 
                 df.at[home_row, 'goalsAgainst'] += away_score
                 df.at[away_row, 'goalsAgainst'] += home_score
-                
-                df.at[home_row, 'goalDiff'] += (home_score - away_score)
-                df.at[away_row, 'goalDiff'] += (away_score - home_score)
                 
                 #Adjust wins iof the home team won
                 if home_score > away_score:
@@ -151,18 +237,14 @@ def calculate_standings(data, df):
                         print("ERROR")
                 else:
                     print("ERROR")
-                    
-                #calculate point percentage
-                df.at[home_row, "pointsPer"] = round(float(df.at[home_row, "points"]) / float(2 * df.at[home_row, "played"]), 3)
-                df.at[away_row, "pointsPer"] = round(float(df.at[away_row, "points"]) / float(2 * df.at[away_row, "played"]), 3)
                 
     return df
 
-
-#Initializes a temporary dataframe to keep track of the team data
+'''
+Initializes a temporary dataframe to keep track of the team data
+'''
 def initialize_dataframe():
-    
-    labels = ['name', 'played', 'wins', 'losses', 'otl', 'points', 'pointsPer', 'rw', 'row', 'goalsFor', 'goalsAgainst', 'goalDiff']
+    labels = ['name', 'played', 'wins', 'losses', 'otl', 'points',  'rw', 'row', 'goalsFor', 'goalsAgainst']
 
     
     team_names = ['Anaheim Ducks', 'Arizona Coyotes', 'Boston Bruins', 'Buffalo Sabres',
@@ -185,7 +267,9 @@ def initialize_dataframe():
     
     return df
 
-#Searches through the game data to determine if the game ended in regulation, OT, or SO
+'''
+Searches through the game data to determine if the game ended in regulation, OT, or SO
+'''
 def get_game_status(link):
     response = requests.get(API_URL + link, params={"Content-Type": "application/json"})
     data = response.json()
@@ -203,4 +287,4 @@ def get_game_status(link):
     #return proper status
     return status
     
-get_old_standings(2022, 11, 15)
+get_old_standings(2023, 1, 15)
