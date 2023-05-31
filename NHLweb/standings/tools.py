@@ -75,18 +75,22 @@ def get_old_standings(year, month, day):
                 home_team = game["teams"]["home"]["team"]["name"]
                 schedule.append([away_team, home_team])
                 
-    df = simulate_season(df, schedule)
+    #df = simulate_season(df, schedule)
     
-    
+    # for row in df.values.tolist():
+    #     print(row[0], row[7])
+    # print(len(schedule))
         
-    return df
+    return df, schedule
                   
 '''
 Simulates the remaining part of the NHL season from a given point.
 Takes the current standings and future schedule as input and returns a 
 single possible outcome based off of a teams win probabilities
 '''
-def simulate_season(df, schedule):
+def simulate_season(new_df, schedule):
+    
+    df = new_df.copy(deep=True)
     
     #Odd of a game going to overtime
     ot_odds = 0.25
@@ -316,43 +320,115 @@ def get_game_status(link):
 
 
     
-temp = get_old_standings(2023, 5, 15)
+temp, schedule = get_old_standings(2022, 11, 15)
 
 #%%
 
 '''
 takes standings and runs simulations.
-returns a 32d array of playoff odds for each team
+returns playoff odds for each team
 '''
-def get_playoff_odds(df):
-    pass
+def get_playoff_odds(df, schedule, runs = 100):
+    
+    df = df.copy(deep=True)
+    
+    for i in range(100):
+        simmed = simulate_season(df, schedule)
+    
+        playoff_teams = get_playoff_teams(simmed)
+        
+        for team in playoff_teams:
+            team_index = df.index[df['name'] == team][0]
+            
+            df.at[team_index, 'playoff'] += 1
+    
+    results = []
+    for row in df.values.tolist():
+        results.append([row[0], round(row[-1] / runs,2)])
+        
+    print(results)
+    
+    return results
+    
+        
 
 
 '''
 returns the 16 teams that make the playoffs
 '''
-def get_playoff_teams(df):
+def get_playoff_teams(new_df):
+    
+    df = new_df.copy(deep=True)
+    
     #split dataframe into smaller sets of teams
     east = rank_teams(df[df['conference'] == 'Eastern'])
-    west = rank_teams(df[df['conference'] == 'Eastern'])
+    west = rank_teams(df[df['conference'] == 'Western'])
     
     atlantic = rank_teams(df[df['division'] == 'Atlantic'])
     metro = rank_teams(df[df['division'] == 'Metropolitan'])
     pacific = rank_teams(df[df['division'] == 'Pacific'])
     central = rank_teams(df[df['division'] == 'Central'])
     
-    print(atlantic)
-    # for row in atlantic.values.tolist():
-    #     print(row)
-    # print()
-    # for row in metro.values.tolist():
-    #     print(row)
-    # print() 
-    # for row in pacific.values.tolist():
-    #     print(row)
-    # print()    
-    # for row in central.values.tolist():
-    #     print(row)
+    
+    #initialize lists to store playoff teams
+    atl_teams = []
+    met_teams = []
+    ewc_teams = []
+    
+    cen_teams = []
+    pac_teams = []
+    wwc_teams = []
+    
+    #Add top teams from eastern divisions
+    count = 0
+    for row in atlantic.values.tolist():
+        atl_teams.append(row[0])
+        count += 1 
+        if count > 2:
+            break
+        
+    count = 0
+    for row in metro.values.tolist():
+        met_teams.append(row[0])
+        count += 1 
+        if count > 2:
+            break
+        
+    #Get wildcard teams from east
+    count = 0
+    for row in east.values.tolist():
+        if (row[0] not in atl_teams) and (row[0] not in met_teams):
+            ewc_teams.append(row[0])
+            count += 1 
+            if count > 1:
+                break
+            
+    #Add top teams from western divisions
+    count = 0
+    for row in pacific.values.tolist():
+        pac_teams.append(row[0])
+        count += 1 
+        if count > 2:
+            break
+    
+    count = 0
+    for row in central.values.tolist():
+        cen_teams.append(row[0])
+        count += 1 
+        if count > 2:
+            break
+        
+    #Get wildcard teams from west
+    count = 0
+    for row in west.values.tolist():
+        if (row[0] not in cen_teams) and (row[0] not in pac_teams):
+            wwc_teams.append(row[0])
+            count += 1 
+            if count > 1:
+                break
+    
+    return atl_teams + met_teams + ewc_teams + pac_teams + cen_teams + wwc_teams
+
 
 '''
 Ranks teams passed in order based on points and tiebreakers
@@ -362,6 +438,6 @@ def rank_teams(df):
                         ascending = [False, False, False, False, False, False], ignore_index = True)
     
 
-get_playoff_teams(temp)
+t = get_playoff_odds(temp, schedule)
 
 
