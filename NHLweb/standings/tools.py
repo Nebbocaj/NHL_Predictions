@@ -77,9 +77,9 @@ def get_old_standings(year, month, day):
                 
     df = simulate_season(df, schedule)
     
-    #Print out the table 
-    for row in df.values.tolist():
-        print(row[0], row[5])
+    
+        
+    return df
                   
 '''
 Simulates the remaining part of the NHL season from a given point.
@@ -244,25 +244,51 @@ def calculate_standings(data, df):
 Initializes a temporary dataframe to keep track of the team data
 '''
 def initialize_dataframe():
-    labels = ['name', 'played', 'wins', 'losses', 'otl', 'points',  'rw', 'row', 'goalsFor', 'goalsAgainst']
+    labels = ['name', 'conference', 'division', 'played', 'wins', 'losses', 'otl', 'points',  'rw', 'row', 'goalsFor', 'goalsAgainst', 'playoff']
 
     
-    team_names = ['Anaheim Ducks', 'Arizona Coyotes', 'Boston Bruins', 'Buffalo Sabres',
-                  'Calgary Flames', 'Carolina Hurricanes', 'Chicago Blackhawks', 'Colorado Avalanche', 
-                  'Columbus Blue Jackets','Dallas Stars', 'Detroit Red Wings', 'Edmonton Oilers',
-                  'Florida Panthers', 'Los Angeles Kings', 'Minnesota Wild', 'Montréal Canadiens', 
-                  'Nashville Predators', 'New Jersey Devils', 'New York Islanders', 'New York Rangers', 
-                  'Ottawa Senators', 'Philadelphia Flyers', 'Pittsburgh Penguins', 'San Jose Sharks', 
-                  'Seattle Kraken', 'St. Louis Blues', 'Tampa Bay Lightning', 'Toronto Maple Leafs', 
-                  'Vancouver Canucks', 'Vegas Golden Knights', 'Washington Capitals', 'Winnipeg Jets']
+    team_names = [['Anaheim Ducks', 'Western', 'Pacific'], 
+                  ['Arizona Coyotes', 'Western', 'Central'], 
+                  ['Boston Bruins', 'Eastern', 'Atlantic'], 
+                  ['Buffalo Sabres', 'Eastern', 'Atlantic'],
+                  ['Calgary Flames', 'Western', 'Pacific'], 
+                  ['Carolina Hurricanes', 'Eastern', 'Metropolitan'], 
+                  ['Chicago Blackhawks', 'Western', 'Central'], 
+                  ['Colorado Avalanche', 'Western', 'Central'], 
+                  ['Columbus Blue Jackets', 'Eastern', 'Metropolitan'],
+                  ['Dallas Stars', 'Western', 'Central'], 
+                  ['Detroit Red Wings', 'Eastern', 'Atlantic'], 
+                  ['Edmonton Oilers', 'Western', 'Pacific'],
+                  ['Florida Panthers', 'Eastern', 'Atlantic'],
+                  ['Los Angeles Kings', 'Western', 'Pacific'], 
+                  ['Minnesota Wild', 'Western', 'Central'], 
+                  ['Montréal Canadiens', 'Eastern', 'Atlantic'], 
+                  ['Nashville Predators', 'Western', 'Central'], 
+                  ['New Jersey Devils', 'Eastern', 'Metropolitan'], 
+                  ['New York Islanders', 'Eastern', 'Metropolitan'], 
+                  ['New York Rangers', 'Eastern', 'Metropolitan'], 
+                  ['Ottawa Senators', 'Eastern', 'Atlantic'], 
+                  ['Philadelphia Flyers', 'Eastern', 'Metropolitan'], 
+                  ['Pittsburgh Penguins', 'Eastern', 'Metropolitan'], 
+                  ['San Jose Sharks', 'Western', 'Pacific'], 
+                  ['Seattle Kraken', 'Western', 'Pacific'], 
+                  ['St. Louis Blues', 'Western', 'Central'], 
+                  ['Tampa Bay Lightning', 'Eastern', 'Atlantic'], 
+                  ['Toronto Maple Leafs', 'Eastern', 'Atlantic'], 
+                  ['Vancouver Canucks', 'Western', 'Central'], 
+                  ['Vegas Golden Knights', 'Western', 'Pacific'], 
+                  ['Washington Capitals', 'Eastern', 'Metropolitan'], 
+                  ['Winnipeg Jets', 'Western', 'Pacific']]
     
     df = pd.DataFrame(columns = labels)
     
     #Set the name of each team
-    df['name'] = team_names
+    df['name'] = [r[0] for r in team_names]
+    df['conference'] = [r[1] for r in team_names]
+    df['division'] = [r[2] for r in team_names]
     
     #Initialize all other stats to 0
-    for label in labels[1:]:
+    for label in labels[3:]:
         df[label] = [0 for _ in team_names]
     
     return df
@@ -286,5 +312,56 @@ def get_game_status(link):
             
     #return proper status
     return status
+
+
+
     
-get_old_standings(2023, 1, 15)
+temp = get_old_standings(2023, 5, 15)
+
+#%%
+
+'''
+takes standings and runs simulations.
+returns a 32d array of playoff odds for each team
+'''
+def get_playoff_odds(df):
+    pass
+
+
+'''
+returns the 16 teams that make the playoffs
+'''
+def get_playoff_teams(df):
+    #split dataframe into smaller sets of teams
+    east = rank_teams(df[df['conference'] == 'Eastern'])
+    west = rank_teams(df[df['conference'] == 'Eastern'])
+    
+    atlantic = rank_teams(df[df['division'] == 'Atlantic'])
+    metro = rank_teams(df[df['division'] == 'Metropolitan'])
+    pacific = rank_teams(df[df['division'] == 'Pacific'])
+    central = rank_teams(df[df['division'] == 'Central'])
+    
+    print(atlantic)
+    # for row in atlantic.values.tolist():
+    #     print(row)
+    # print()
+    # for row in metro.values.tolist():
+    #     print(row)
+    # print() 
+    # for row in pacific.values.tolist():
+    #     print(row)
+    # print()    
+    # for row in central.values.tolist():
+    #     print(row)
+
+'''
+Ranks teams passed in order based on points and tiebreakers
+'''    
+def rank_teams(df):
+    return df.sort_values(by = ['points', 'played', 'rw', 'row', 'wins', 'goalsFor'], 
+                        ascending = [False, False, False, False, False, False], ignore_index = True)
+    
+
+get_playoff_teams(temp)
+
+
