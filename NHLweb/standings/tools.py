@@ -2,7 +2,7 @@ import requests
 import pandas as pd
 import random
 
-import historic_data
+from .historic_data import get_old_standings
 
 API_URL = "https://statsapi.web.nhl.com"
 
@@ -17,21 +17,28 @@ def get_teams():
     team_list = []
     
     for div in range(4):
+        division = data["records"][div]["division"]["name"]
+        conference = data["records"][div]["conference"]["name"]
         for i in range(8):
+            w = data["records"][div]["teamRecords"][i]["leagueRecord"]["wins"]
+            l = data["records"][div]["teamRecords"][i]["leagueRecord"]["losses"]
+            otl = data["records"][div]["teamRecords"][i]["leagueRecord"]["ot"]
             
             team_list.append([data["records"][div]["teamRecords"][i]["team"]["name"],
-                              data["records"][div]["teamRecords"][i]["leagueRecord"]["wins"],
-                              data["records"][div]["teamRecords"][i]["leagueRecord"]["losses"],
-                              data["records"][div]["teamRecords"][i]["leagueRecord"]["ot"],
+                              conference, division, w+l+otl, w, l, otl,
                               data["records"][div]["teamRecords"][i]["points"],
-                              data["records"][div]["teamRecords"][i]["pointsPercentage"],
                               data["records"][div]["teamRecords"][i]["regulationWins"],
                               data["records"][div]["teamRecords"][i]["row"],
                               data["records"][div]["teamRecords"][i]["goalsScored"],
-                              data["records"][div]["teamRecords"][i]["goalsAgainst"],
-                              data["records"][div]["teamRecords"][i]["goalsScored"] - data["records"][div]["teamRecords"][i]["goalsAgainst"]])
-
-    return team_list
+                              data["records"][div]["teamRecords"][i]["goalsAgainst"], 0])
+            
+    labels = ['name', 'conference', 'division', 'played', 'wins', 'losses', 'otl', 'points',  'rw', 'row', 'goalsFor', 'goalsAgainst', 'playoff']
+    
+    df = pd.DataFrame(team_list, columns = labels)
+    
+    
+    
+    return df
 
 
                   
@@ -232,8 +239,8 @@ def rank_teams(df):
                         ascending = [False, False, False, False, False, False], ignore_index = True)
     
 
-temp, schedule = historic_data.get_old_standings(2023, 4, 1)
+# temp, schedule = historic_data.get_old_standings(2023, 4, 1)
 
-t = get_playoff_odds(temp, schedule)
+# t = get_playoff_odds(temp, schedule)
 
 

@@ -12,14 +12,29 @@ def home(request):
     #Make sure that there are exactly 32 teams at all times.
     #if len(all_teams) != 32:
     all_teams.delete()
-    for t in get_teams():
-        new_team = Team(name = t[0], wins = t[1], losses = t[2], otl = t[3], 
-                        points = t[4], pointPer = round(t[5],3), rw = t[6], row = t[7],
-                        goalsFor = t[8], goalsAgainst = t[9], goalDiff = t[10])
+    
+    team_standings = get_teams()
+    
+    print(team_standings.to_string())
+    
+    for index, team in team_standings.iterrows():
+        
+        gp = team['played']
+        w = team['wins']
+        l = team['losses']
+        otl = team['otl']
+        
+        new_team = Team(name = team['name'], played = gp, wins = w, losses = l,
+                        otl = otl, points = team['points'],
+                        pointPer = round((2*w + otl) / (2*gp), 3), 
+                        rw = team['rw'], row = team['row'],
+                        goalsFor = team['goalsFor'], goalsAgainst = team['goalsAgainst'],
+                        goalDiff = team['goalsFor'] - team['goalsAgainst'],
+                        playoffOdds = team['playoff'])
+
         new_team.save()
 
     #Retrieve all teams and order them by points.
-    #THIS WILL CHANGE LATER WHEN THERE IS A BETTER ORGANIZATION SYSTEM
     team_list = Team.objects.order_by("-points")
     
     template = loader.get_template("standings/league.html")
