@@ -31,8 +31,7 @@ def get_old_standings(year, month, day):
     data_future = response_future.json()
     
     df = calculate_standings(data_past, df) 
-        
-    print("\n\n")
+    #ROEMOVE THIS LATER AS THERE IS A NEW FUNCTION BELOW
     #Get the future schedule 
     schedule = []
     for date in data_future["dates"][1:]:
@@ -43,6 +42,34 @@ def get_old_standings(year, month, day):
                 schedule.append([away_team, home_team])
                 
     return df, schedule
+
+
+'''
+Gets the future schedule from specific date
+'''
+def get_schedule(year, month, day):
+    
+    if month > 8: 
+        end = year + 1
+    else:
+        end = year
+        
+    #Get the future schedule from API
+    response_future = requests.get(API_URL + "/api/v1/schedule?startDate=" 
+                                   + str(year) + "-" + str(month) + "-" + str(day) + "&endDate=" + 
+                                   str(end) + "-7-31", params={"Content-Type": "application/json"})
+    data_future = response_future.json()
+
+    #Get the future schedule 
+    schedule = []
+    for date in data_future["dates"][1:]:
+        for game in date["games"]:
+            if game['gameType'] == 'R':
+                away_team = game["teams"]["away"]["team"]["name"]
+                home_team = game["teams"]["home"]["team"]["name"]
+                schedule.append([away_team, home_team])
+                
+    return schedule
 
 '''
 Initializes a temporary dataframe to keep track of the team data

@@ -1,8 +1,9 @@
 import requests
 import pandas as pd
 import random
+from datetime import date
 
-from .historic_data import get_old_standings
+from .historic_data import get_old_standings, get_schedule
 
 API_URL = "https://statsapi.web.nhl.com"
 
@@ -35,9 +36,12 @@ def get_teams():
     labels = ['name', 'conference', 'division', 'played', 'wins', 'losses', 'otl', 'points',  'rw', 'row', 'goalsFor', 'goalsAgainst', 'playoff']
     
     df = pd.DataFrame(team_list, columns = labels)
+
+    today = str(date.today())
+    schedule = get_schedule(int(today[:4]), int(today[5:7]), int(today[8:10]))
     
-    
-    
+    df = get_playoff_odds(df, schedule)
+
     return df
 
 
@@ -142,14 +146,11 @@ def get_playoff_odds(df, schedule, runs = 100):
             team_index = df.index[df['name'] == team][0]
             
             df.at[team_index, 'playoff'] += 1
+            
+    for index, row in df.iterrows():
+        df.at[index, 'playoff'] /= runs
     
-    results = []
-    for row in df.values.tolist():
-        results.append([row[0], round(row[-1] / runs,2)])
-        
-    print(results)
-    
-    return results
+    return df
     
         
 

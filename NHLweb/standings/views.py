@@ -15,8 +15,6 @@ def home(request):
     
     team_standings = get_teams()
     
-    print(team_standings.to_string())
-    
     for index, team in team_standings.iterrows():
         
         gp = team['played']
