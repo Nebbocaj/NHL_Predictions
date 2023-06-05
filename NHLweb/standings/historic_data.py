@@ -12,10 +12,8 @@ def get_old_standings(year, month, day):
     
     if month > 8: 
         start = year
-        end = year + 1
     else:
         start = year - 1
-        end = year
     
     
     #Get past data from API
@@ -24,24 +22,13 @@ def get_old_standings(year, month, day):
                             params={"Content-Type": "application/json"})
     data_past = response_past.json()
     
-    #Get the future schedule from API
-    response_future = requests.get(API_URL + "/api/v1/schedule?startDate=" 
-                                   + str(year) + "-" + str(month) + "-" + str(day) + "&endDate=" + 
-                                   str(end) + "-7-31", params={"Content-Type": "application/json"})
-    data_future = response_future.json()
     
     df = calculate_standings(data_past, df) 
-    #ROEMOVE THIS LATER AS THERE IS A NEW FUNCTION BELOW
-    #Get the future schedule 
-    schedule = []
-    for date in data_future["dates"][1:]:
-        for game in date["games"]:
-            if game['gameType'] == 'R':
-                away_team = game["teams"]["away"]["team"]["name"]
-                home_team = game["teams"]["home"]["team"]["name"]
-                schedule.append([away_team, home_team])
+    
+    sched = get_schedule(year, month, day)
+
                 
-    return df, schedule
+    return df, sched
 
 
 '''
@@ -219,3 +206,5 @@ def get_game_status(link):
             
     #return proper status
     return status
+
+#print(get_old_standings(2023, 1, 1))

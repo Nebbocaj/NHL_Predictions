@@ -4,8 +4,44 @@ import random
 from datetime import date
 
 from .historic_data import get_old_standings, get_schedule
+#import historic_data
+from .models import Team
 
 API_URL = "https://statsapi.web.nhl.com"
+
+
+'''
+Retrieve all teams from the NHL api from scratch if needed
+This will be done once per day as it can take a bit to simulate
+The point expectations for teams
+'''
+def reload_teams():
+    
+    #Collect and delete all rows
+    all_teams = Team.objects.all()
+    all_teams.delete()
+    
+    #Get a pandas dataframe of all teams
+    team_standings = get_teams()
+    
+    #Convert the standings into rows in the database
+    for index, team in team_standings.iterrows():
+        
+        gp = team['played']
+        w = team['wins']
+        l = team['losses']
+        otl = team['otl']
+        
+        new_team = Team(name = team['name'], played = gp, wins = w, losses = l,
+                        otl = otl, points = team['points'],
+                        pointPer = round((2*w + otl) / (2*gp), 3), 
+                        rw = team['rw'], row = team['row'],
+                        goalsFor = team['goalsFor'], goalsAgainst = team['goalsAgainst'],
+                        goalDiff = team['goalsFor'] - team['goalsAgainst'],
+                        playoffOdds = team['playoff'])
+
+        new_team.save()
+
 
 '''
 Returns every team and their current place in the standings
@@ -133,11 +169,12 @@ def simulate_season(new_df, schedule):
 takes standings and runs simulations.
 returns playoff odds for each team
 '''
-def get_playoff_odds(df, schedule, runs = 100):
+def get_playoff_odds(df, schedule, runs = 1000):
     
     df = df.copy(deep=True)
     
-    for i in range(100):
+    for i in range(runs):
+        print(i)
         simmed = simulate_season(df, schedule)
     
         playoff_teams = get_playoff_teams(simmed)
@@ -240,7 +277,7 @@ def rank_teams(df):
                         ascending = [False, False, False, False, False, False], ignore_index = True)
     
 
-# temp, schedule = historic_data.get_old_standings(2023, 4, 1)
+# temp, schedule = historic_data.get_old_standings(2022, 10, 30)
 
 # t = get_playoff_odds(temp, schedule)
 

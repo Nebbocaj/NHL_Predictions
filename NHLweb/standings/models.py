@@ -18,5 +18,18 @@ class Team(models.Model):
     goalDiff = models.IntegerField(default = 0)
     playoffOdds = models.FloatField(default = 0)
     
+    def __str__(self):
+        return self.name
+    
 
-#NEED TO CREATE A TABLE THAT JUST STORES HISTORICAL DATA FOR EACH TEAM
+class Odds(models.Model):
+    team = models.CharField(default = '', max_length = 1000)
+    
+    def get_values(self):
+        return list(map(int, self.values.split(',')))
+    
+    def set_values(self, values):
+        self.values = ','.join(map(str, values))
+        
+    def __str__(self):
+        return f"IntegerArray: {self.get_values()}"
