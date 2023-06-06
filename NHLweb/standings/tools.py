@@ -1,6 +1,6 @@
 import requests
 import pandas as pd
-import random
+import numpy as np
 from datetime import date
 
 from .historic_data import get_old_standings, get_schedule
@@ -101,75 +101,76 @@ def simulate_season(new_df, schedule):
     #WILL CHANGE ONCE AN ELO SYSTEM IS IMPLEMENTED
     home_win = 0.5
     
-    #loop through every future game of the season and
-    #simulate results via the random variables
-    for game in schedule:
-        away_team = game[0]
-        home_team = game[1]
-        
-        #Get rows for each playing team
-        home_row = df.index[df['name'] == home_team][0]
-        away_row = df.index[df['name'] == away_team][0]
-        
-        #determine if a game goes to overtime or a shootout froma random value
-        type_event = random.uniform(0,1)
-        
-        #determine the winner from a random value
-        win_event = random.uniform(0,1)
-        
-        #Increase the team's games played
-        df.at[home_row, 'played'] += 1
-        df.at[away_row, 'played'] += 1
-        
-        #If the event is a shootout...
-        if type_event <= so_odds:
-            if win_event < home_win:
-                df.at[home_row, 'wins'] += 1
-                df.at[home_row, 'points'] += 2
-                df.at[away_row, 'otl'] += 1
-                df.at[away_row, 'points'] += 1
-            else:
-                df.at[away_row, 'wins'] += 1
-                df.at[away_row, 'points'] += 2
-                df.at[home_row, 'otl'] += 1
-                df.at[home_row, 'points'] += 1
-                
-        #if the event is overtime...
-        elif type_event <= ot_odds:
-            if win_event < home_win:
-                df.at[home_row, 'wins'] += 1
-                df.at[home_row, 'points'] += 2
-                df.at[home_row, 'row'] += 1
-                df.at[away_row, 'otl'] += 1
-                df.at[away_row, 'points'] += 1
-            else:
-                df.at[away_row, 'wins'] += 1
-                df.at[away_row, 'points'] += 2
-                df.at[away_row, 'row'] += 1
-                df.at[home_row, 'otl'] += 1
-                df.at[home_row, 'points'] += 1
-           
-        #if the event is regulation...
-        else:
-            if win_event < home_win:
-                df.at[home_row, 'wins'] += 1
-                df.at[home_row, 'points'] += 2
-                df.at[home_row, 'rw'] += 1
-                df.at[home_row, 'row'] += 1
-                df.at[away_row, 'losses'] += 1
-            else:
-                df.at[away_row, 'wins'] += 1
-                df.at[away_row, 'points'] += 2
-                df.at[away_row, 'rw'] += 1
-                df.at[away_row, 'row'] += 1
-                df.at[home_row, 'losses'] += 1
+    #build a series of random events
+    num_games = len(schedule)
+    type_events = np.random.uniform(0, 1, num_games)
+    win_events = np.random.uniform(0, 1, num_games)
+    
+    #Split the games into a list of home and away teams
+    home_teams = np.array([game[1] for game in schedule])
+    away_teams = np.array([game[0] for game in schedule])
+    
+    #Create basic masks for events
+    so_mask = type_events <= so_odds
+    ot_mask = (type_events <= ot_odds) & (type_events > so_odds)
+    reg_mask = type_events > ot_odds
+    home_mask = win_events <= home_win
+    away_mask = win_events > home_win
+
+    #Create more complex masks for dual events
+    home_so_mask = home_mask & so_mask
+    home_ot_mask = home_mask & ot_mask
+    home_reg_mask = home_mask & reg_mask
+    away_so_mask = away_mask & so_mask
+    away_ot_mask = away_mask & ot_mask
+    away_reg_mask = away_mask & reg_mask
+    
+    #Create final masks for calculating wins, otls, and losses
+    home_win_mask = home_so_mask | home_ot_mask | home_reg_mask
+    away_win_mask = away_so_mask | away_ot_mask | away_reg_mask
+    home_otl_mask = home_so_mask | home_ot_mask
+    away_otl_mask = away_so_mask | away_ot_mask
+    home_row_mask = home_reg_mask | home_ot_mask
+    away_row_mask = away_reg_mask | away_ot_mask
+    
+    #Add all wins to data
+    win_counts = pd.Series(home_teams[home_win_mask]).value_counts() + \
+        pd.Series(away_teams[away_win_mask]).value_counts()
+    df['wins'] += df['name'].map(win_counts).fillna(0)
+    
+    #Add all losses to data
+    loss_counts = pd.Series(home_teams[away_reg_mask]).value_counts() + \
+        pd.Series(away_teams[home_reg_mask]).value_counts()
+    df['losses'] += df['name'].map(loss_counts).fillna(0)
+    
+    #Add all otls to data
+    otl_counts = pd.Series(home_teams[away_otl_mask]).value_counts() + \
+        pd.Series(away_teams[home_otl_mask]).value_counts()
+    df['otl'] += df['name'].map(otl_counts).fillna(0)
+    
+    #Add all rws to data
+    rw_counts = pd.Series(home_teams[home_reg_mask]).value_counts() + \
+        pd.Series(away_teams[away_reg_mask]).value_counts()
+    df['rw'] += df['name'].map(rw_counts).fillna(0)
+    
+    #Add all rows to data
+    row_counts = pd.Series(home_teams[home_row_mask]).value_counts() + \
+        pd.Series(away_teams[away_row_mask]).value_counts()
+    df['row'] += df['name'].map(row_counts).fillna(0)
+    
+    #Get points for each team
+    df['points'] = 2 * df['wins'] + df['otl']
+    
+    #Get games played for each team
+    df['played'] += df['wins'] + df['losses'] + df['otl']
+    
     return df
 
 '''
 takes standings and runs simulations.
 returns playoff odds for each team
 '''
-def get_playoff_odds(df, schedule, runs = 1000):
+def get_playoff_odds(df, schedule, runs = 100):
     
     df = df.copy(deep=True)
     
@@ -189,9 +190,6 @@ def get_playoff_odds(df, schedule, runs = 1000):
     
     return df
     
-        
-
-
 '''
 returns the 16 teams that make the playoffs
 '''
@@ -277,8 +275,8 @@ def rank_teams(df):
                         ascending = [False, False, False, False, False, False], ignore_index = True)
     
 
-# temp, schedule = historic_data.get_old_standings(2022, 10, 30)
+#temp, schedule = historic_data.get_old_standings(2022, 10, 30)
 
-# t = get_playoff_odds(temp, schedule)
+#t = get_playoff_odds(temp, schedule)
 
 
