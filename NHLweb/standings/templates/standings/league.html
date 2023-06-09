@@ -42,7 +42,14 @@ tr:nth-child(odd) {
             <th style="text-align: center;">GF</th>
             <th style="text-align: center;">GA</th>
             <th style="text-align: center;">Diff</th>
-            <th style="text-align: center;">Playoff Odds</th>
+            <th style="text-align: center;">Playoff%</th>
+            <th style="text-align: center;">Pres%</th>
+            <th style="text-align: center;">Conf%</th>
+            <th style="text-align: center;">Div1%</th>
+            <th style="text-align: center;">Div2%</th>
+            <th style="text-align: center;">Div3%</th>
+            <th style="text-align: center;">WC1%</th>
+            <th style="text-align: center;">WC2%</th>
         </tr>
         {% for team in team_list %}
         <tr style="height:25px">
@@ -65,7 +72,15 @@ tr:nth-child(odd) {
                 <td style="text-align: center; width:70px; color:red">{{team.goalDiff}} </td>
             {% endif %}
             
-            <td style="text-align: center; width:100px">{{team.playoffOdds}}</td>
+            <td style="text-align: center; width:70px">{{team.playoffOdds}}</td>
+            <td style="text-align: center; width:70px">{{team.presidentOdds}}</td>
+            <td style="text-align: center; width:70px">{{team.conferenceOdds}}</td>
+            <td style="text-align: center; width:70px">{{team.divisionOdds}}</td>
+            <td style="text-align: center; width:70px">{{team.div2Odds}}</td>
+            <td style="text-align: center; width:70px">{{team.div3Odds}}</td>
+            <td style="text-align: center; width:70px">{{team.wc1Odds}}</td>
+            <td style="text-align: center; width:70px">{{team.wc2Odds}}</td>
+            
             
         </tr>
         {% endfor %}

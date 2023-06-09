@@ -5,6 +5,7 @@ class Team(models.Model):
     name = models.CharField(max_length = 50, default = "")
     division = models.CharField(max_length = 50, default = "")
     conference = models.CharField(max_length = 50, default = "")
+    
     played = models.IntegerField(default = 0)
     wins = models.IntegerField(default = 0)
     losses = models.IntegerField(default = 0)
@@ -16,7 +17,15 @@ class Team(models.Model):
     goalsFor = models.IntegerField(default = 0)
     goalsAgainst = models.IntegerField(default = 0)
     goalDiff = models.IntegerField(default = 0)
+    
     playoffOdds = models.FloatField(default = 0)
+    presidentOdds = models.FloatField(default = 0)
+    divisionOdds = models.FloatField(default = 0)
+    conferenceOdds = models.FloatField(default = 0)
+    div2Odds = models.FloatField(default = 0)
+    div3Odds = models.FloatField(default = 0)
+    wc1Odds = models.FloatField(default = 0)
+    wc2Odds = models.FloatField(default = 0)
     
     def __str__(self):
         return self.name

@@ -38,7 +38,10 @@ def reload_teams():
                         rw = team['rw'], row = team['row'],
                         goalsFor = team['goalsFor'], goalsAgainst = team['goalsAgainst'],
                         goalDiff = team['goalsFor'] - team['goalsAgainst'],
-                        playoffOdds = team['playoff'])
+                        playoffOdds = team['playoff'], presidentOdds = team['president'], 
+                        conferenceOdds = team['conf%'], divisionOdds = team['div1'], 
+                        div2Odds = team['div2'], div3Odds = team['div3'],
+                        wc1Odds = team['wc1'], wc2Odds = team['wc2'])
 
         new_team.save()
 
@@ -53,6 +56,7 @@ def get_teams():
     
     team_list = []
     
+    #Initialize a 2D list with current standings information
     for div in range(4):
         division = data["records"][div]["division"]["name"]
         conference = data["records"][div]["conference"]["name"]
@@ -67,19 +71,113 @@ def get_teams():
                               data["records"][div]["teamRecords"][i]["regulationWins"],
                               data["records"][div]["teamRecords"][i]["row"],
                               data["records"][div]["teamRecords"][i]["goalsScored"],
-                              data["records"][div]["teamRecords"][i]["goalsAgainst"], 0])
-            
-    labels = ['name', 'conference', 'division', 'played', 'wins', 'losses', 'otl', 'points',  'rw', 'row', 'goalsFor', 'goalsAgainst', 'playoff']
+                              data["records"][div]["teamRecords"][i]["goalsAgainst"], 0, 
+                              0,0,0,0,0,0,0])
     
+    #Turn the list into a pandas dataframe
+    labels = ['name', 'conference', 'division', 'played', 'wins', 'losses', 
+              'otl', 'points',  'rw', 'row', 'goalsFor', 'goalsAgainst', 'playoff',
+              'president', 'conf%', 'div1', 'div2', 'div3', 'wc1', 'wc2']
     df = pd.DataFrame(team_list, columns = labels)
 
+    #Get the schedule for all teams
     today = str(date.today())
     schedule = get_schedule(int(today[:4]), int(today[5:7]), int(today[8:10]))
     
+    #Update the dataframe with data from the simmed season
     df = get_playoff_odds(df, schedule)
 
     return df
 
+'''
+takes standings and runs simulations.
+returns playoff odds for each team
+'''
+def get_playoff_odds(df, schedule, runs = 5):
+    
+    df = df.copy(deep=True)
+    
+    for i in range(runs):
+        simmed = simulate_season(df, schedule)
+        
+        #retrieve all playoff team information and winners from the simmed season
+        playoffs, pres_win, east_win, west_win, atl_teams, met_teams, \
+                ewc_teams, pac_teams, cen_teams, wwc_teams = get_playoff_teams(simmed)
+        
+        p = playoffs, pres_win, east_win, west_win, atl_teams, met_teams, \
+                ewc_teams, pac_teams, cen_teams, wwc_teams
+        for x in p:
+            print(x)
+        
+        #For each team in the playoffs, add 1 playoff appearence to the database
+        for team in playoffs:
+            team_index = df.index[df['name'] == team][0]
+            df.at[team_index, 'playoff'] += 1
+            
+        #Update president winner score
+        pres_index = df.index[df['name'] == pres_win][0]
+        df.at[pres_index, 'president'] += 1
+        
+        #Update conference winners' scores
+        conf1_index = df.index[df['name'] == east_win][0]
+        conf2_index = df.index[df['name'] == west_win][0]
+        df.at[conf1_index, 'conf%'] += 1
+        df.at[conf2_index, 'conf%'] += 1
+        
+        #Update div winner scores
+        atl_index1 = df.index[df['name'] == atl_teams[0]][0]
+        met_index1 = df.index[df['name'] == met_teams[0]][0]
+        pac_index1 = df.index[df['name'] == pac_teams[0]][0]
+        cen_index1 = df.index[df['name'] == cen_teams[0]][0]
+        df.at[atl_index1, 'div1'] += 1
+        df.at[met_index1, 'div1'] += 1
+        df.at[pac_index1, 'div1'] += 1
+        df.at[cen_index1, 'div1'] += 1
+        
+        #Update div second place scores
+        atl_index2 = df.index[df['name'] == atl_teams[1]][0]
+        met_index2 = df.index[df['name'] == met_teams[1]][0]
+        pac_index2 = df.index[df['name'] == pac_teams[1]][0]
+        cen_index2 = df.index[df['name'] == cen_teams[1]][0]
+        df.at[atl_index2, 'div2'] += 1
+        df.at[met_index2, 'div2'] += 1
+        df.at[pac_index2, 'div2'] += 1
+        df.at[cen_index2, 'div2'] += 1
+        
+        #Update div third place scores
+        atl_index3 = df.index[df['name'] == atl_teams[2]][0]
+        met_index3 = df.index[df['name'] == met_teams[2]][0]
+        pac_index3 = df.index[df['name'] == pac_teams[2]][0]
+        cen_index3 = df.index[df['name'] == cen_teams[2]][0]
+        df.at[atl_index3, 'div3'] += 1
+        df.at[met_index3, 'div3'] += 1
+        df.at[pac_index3, 'div3'] += 1
+        df.at[cen_index3, 'div3'] += 1
+        
+        #Update wc1 scores
+        ewc_index1 = df.index[df['name'] == ewc_teams[0]][0]
+        wwc_index1 = df.index[df['name'] == wwc_teams[0]][0]
+        df.at[ewc_index1, 'wc1'] += 1
+        df.at[wwc_index1, 'wc1'] += 1
+        
+        #Update wc2 scores
+        ewc_index2 = df.index[df['name'] == ewc_teams[1]][0]
+        wwc_index2 = df.index[df['name'] == wwc_teams[1]][0]
+        df.at[ewc_index2, 'wc2'] += 1
+        df.at[wwc_index2, 'wc2'] += 1
+        
+            
+    for index, row in df.iterrows():
+        df.at[index, 'playoff'] *= 100 / runs
+        df.at[index, 'president'] *= 100 / runs 
+        df.at[index, 'conf%'] *= 100 / runs 
+        df.at[index, 'div1'] *= 100 / runs
+        df.at[index, 'div2'] *= 100 / runs 
+        df.at[index, 'div3'] *= 100 / runs 
+        df.at[index, 'wc1'] *= 100 / runs 
+        df.at[index, 'wc2'] *= 100 / runs 
+    
+    return df
 
                   
 '''
@@ -166,32 +264,10 @@ def simulate_season(new_df, schedule):
     
     return df
 
-'''
-takes standings and runs simulations.
-returns playoff odds for each team
-'''
-def get_playoff_odds(df, schedule, runs = 100):
-    
-    df = df.copy(deep=True)
-    
-    for i in range(runs):
-        print(i)
-        simmed = simulate_season(df, schedule)
-    
-        playoff_teams = get_playoff_teams(simmed)
-        
-        for team in playoff_teams:
-            team_index = df.index[df['name'] == team][0]
-            
-            df.at[team_index, 'playoff'] += 1
-            
-    for index, row in df.iterrows():
-        df.at[index, 'playoff'] /= runs
-    
-    return df
     
 '''
-returns the 16 teams that make the playoffs
+returns the 16 teams that make the playoffs,
+as well as the presidents winner and conference winners.
 '''
 def get_playoff_teams(new_df):
     
@@ -206,6 +282,8 @@ def get_playoff_teams(new_df):
     pacific = rank_teams(df[df['division'] == 'Pacific'])
     central = rank_teams(df[df['division'] == 'Central'])
     
+    total = rank_teams(df)
+    
     
     #initialize lists to store playoff teams
     atl_teams = []
@@ -215,6 +293,12 @@ def get_playoff_teams(new_df):
     cen_teams = []
     pac_teams = []
     wwc_teams = []
+    
+    #get the champions of the league, and each conference
+    pres_win = total.values.tolist()[0][0]
+    east_win = east.values.tolist()[0][0]
+    west_win = west.values.tolist()[0][0]
+    
     
     #Add top teams from eastern divisions
     count = 0
@@ -263,8 +347,12 @@ def get_playoff_teams(new_df):
             count += 1 
             if count > 1:
                 break
+            
+    #Get a list of the 16 teams that make the playoffs
+    playoffs = atl_teams + met_teams + ewc_teams + pac_teams + cen_teams + wwc_teams
     
-    return atl_teams + met_teams + ewc_teams + pac_teams + cen_teams + wwc_teams
+    return playoffs, pres_win, east_win, west_win, atl_teams, met_teams, \
+            ewc_teams, pac_teams, cen_teams, wwc_teams
 
 
 '''
