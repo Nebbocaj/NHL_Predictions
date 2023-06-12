@@ -32,13 +32,14 @@ class Team(models.Model):
     
 
 class Odds(models.Model):
-    team = models.CharField(default = '', max_length = 1000)
+    name = models.CharField(max_length = 50, default = "")
+    playoff = models.CharField(default = '10,10', max_length = 1000)
     
     def get_values(self):
-        return list(map(int, self.values.split(',')))
+        return list(map(int, self.playoff.split(',')))
     
     def set_values(self, values):
-        self.values = ','.join(map(str, values))
+        self.playoff = ','.join(map(str, values))
         
     def __str__(self):
-        return f"IntegerArray: {self.get_values()}"
+        return self.name

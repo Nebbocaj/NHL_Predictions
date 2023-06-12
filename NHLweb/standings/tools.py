@@ -5,7 +5,7 @@ from datetime import date
 
 from .historic_data import get_old_standings, get_schedule
 #import historic_data
-from .models import Team
+from .models import Team, Odds
 
 API_URL = "https://statsapi.web.nhl.com"
 
@@ -45,6 +45,24 @@ def reload_teams():
 
         new_team.save()
 
+
+def reset_odds():
+    
+    #Collect and delete all rows
+    all_teams = Odds.objects.all()
+    all_teams.delete()
+    
+    
+    team_list = Team.objects.order_by("-points")
+    
+    for t in team_list:
+        new_team = Odds(name = t.name)
+        new_team.save()
+        
+        
+        
+        
+    
 
 '''
 Returns every team and their current place in the standings
@@ -103,11 +121,6 @@ def get_playoff_odds(df, schedule, runs = 5):
         #retrieve all playoff team information and winners from the simmed season
         playoffs, pres_win, east_win, west_win, atl_teams, met_teams, \
                 ewc_teams, pac_teams, cen_teams, wwc_teams = get_playoff_teams(simmed)
-        
-        p = playoffs, pres_win, east_win, west_win, atl_teams, met_teams, \
-                ewc_teams, pac_teams, cen_teams, wwc_teams
-        for x in p:
-            print(x)
         
         #For each team in the playoffs, add 1 playoff appearence to the database
         for team in playoffs:
