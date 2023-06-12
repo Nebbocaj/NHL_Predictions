@@ -1,7 +1,8 @@
 import requests
 import pandas as pd
 import numpy as np
-from datetime import date
+from datetime import date, timedelta
+
 
 from .historic_data import get_old_standings, get_schedule
 #import historic_data
@@ -49,17 +50,34 @@ def reload_teams():
 def reset_odds():
     
     #Collect and delete all rows
-    all_teams = Odds.objects.all()
-    all_teams.delete()
-    
+    all_odds = Odds.objects.all()
+    all_odds.delete()
     
     team_list = Team.objects.order_by("-points")
     
     for t in team_list:
-        new_team = Odds(name = t.name)
-        new_team.save()
+        new_odds = Odds(name = t.name)
+        new_odds.save()
+    
+    all_dates = get_dates()
         
-        
+    
+
+'''
+return all dates in between two points.
+Used in collecting old data when odds are reset.
+'''
+def get_dates():
+    start_date = date(2022, 7, 1)
+    end_date = date(2023, 6, 1)
+    delta = timedelta(days=1)
+    dates = []
+
+    while start_date <= end_date:
+        dates.append(start_date)
+        start_date += delta
+
+    return dates
         
         
     
@@ -71,7 +89,6 @@ def get_teams():
     
     response = requests.get(API_URL + "/api/v1/standings", params={"Content-Type": "application/json"})
     data = response.json()
-    
     team_list = []
     
     #Initialize a 2D list with current standings information
