@@ -47,6 +47,9 @@ def reload_teams():
         new_team.save()
 
 
+'''
+resets the odds table from scratch
+'''
 def reset_odds():
     
     #Collect and delete all rows
@@ -58,18 +61,70 @@ def reset_odds():
     for t in team_list:
         new_odds = Odds(name = t.name)
         new_odds.save()
-    
-    all_dates = get_dates()
         
+    today = str(date.today())
+    y = int(today[:4])
+    m = int(today[5:7])
+    d = int(today[8:10])
+    opening, closing = season_date_params(y, m, d)
     
+    
+    all_dates = get_dates(str(opening), str(closing))
+    for d in all_dates:
+        print(str(d))
+    
+
+'''
+Gets the first and last day of the regular season.
+Used to determine where to start calculating odds.
+'''
+def season_date_params(year, month, day):
+    
+    if month > 8: 
+        start = year
+        end = year + 1
+    else:
+        start = year - 1
+        end = year
+    
+    
+    #Get past data from API
+    response_past = requests.get(API_URL + "/api/v1/schedule?startDate=" + str(start) + "-8-1&endDate=" 
+                            + str(end) + "-" + str(month) + "-" + str(day), 
+                            params={"Content-Type": "application/json"})
+    season_data = response_past.json()
+
+    return get_open(year, month, day, season_data), get_close(year, month, day, season_data)
+
+'''
+Get the date of the opening game for the season
+'''
+def get_open(year, month, day, season_data):
+    for d in season_data["dates"][1:]:
+        for game in d["games"]:
+            if game['gameType'] == 'R':
+                return d['date']
+                
+    return str(year) + "-" + str(month) + "-" + str(day)
+    
+'''
+Get the data for the last day of the regular season
+'''
+def get_close(year, month, day, season_data):
+    for d in season_data["dates"][::-1]:
+        for game in d["games"]:
+            if game['gameType'] == 'R':
+                return d['date']
+                
+    return str(year) + "-" + str(month) + "-" + str(day)
 
 '''
 return all dates in between two points.
 Used in collecting old data when odds are reset.
 '''
-def get_dates():
-    start_date = date(2022, 7, 1)
-    end_date = date(2023, 6, 1)
+def get_dates(start, end):
+    start_date = date(int(start[:4]), int(start[5:7]), int(start[8:10]))
+    end_date = date(int(end[:4]), int(end[5:7]), int(end[8:10]))
     delta = timedelta(days=1)
     dates = []
 
