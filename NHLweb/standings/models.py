@@ -33,7 +33,7 @@ class Team(models.Model):
 
 class Odds(models.Model):
     name = models.CharField(max_length = 50, default = "")
-    playoff = models.CharField(default = '10,10', max_length = 1000)
+    playoff = models.CharField(default = '-1', max_length = 1000)
     
     def get_values(self):
         return list(map(int, self.playoff.split(',')))

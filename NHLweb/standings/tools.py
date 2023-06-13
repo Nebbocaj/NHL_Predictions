@@ -4,7 +4,7 @@ import numpy as np
 from datetime import date, timedelta
 
 
-from .historic_data import get_old_standings, get_schedule
+from .historic_data import get_old_standings, get_schedule, initialize_dataframe, calculate_standings
 #import historic_data
 from .models import Team, Odds
 
@@ -56,22 +56,69 @@ def reset_odds():
     all_odds = Odds.objects.all()
     all_odds.delete()
     
+    #Initialize a row for each team in the table
     team_list = Team.objects.order_by("-points")
-    
     for t in team_list:
         new_odds = Odds(name = t.name)
         new_odds.save()
         
+    #Get the series of dates between the start of the season and the current date
     today = str(date.today())
     y = int(today[:4])
     m = int(today[5:7])
     d = int(today[8:10])
-    opening, closing = season_date_params(y, m, d)
+    opening, closing = season_date_params(2023, 1, 1)
+    all_dates = get_dates(opening, closing)
     
+    #Initialize a new dataframe
+    old_standings = initialize_dataframe()    
     
-    all_dates = get_dates(str(opening), str(closing))
-    for d in all_dates:
-        print(str(d))
+    #Loop through all days in the list
+    for day in all_dates:
+        
+        print(day)
+        
+        y1 = str(day)[:4]
+        m1 = str(day)[5:7]
+        d1 = str(day)[8:10]
+        
+        #Get game data from that specific day
+        '''look into speeding this section up ****************************'''
+        response_past = requests.get(API_URL + "/api/v1/schedule?startDate=" + y1 + "-" + m1 + "-" + d1 + "&endDate=" 
+                                + y1 + "-" + m1 + "-" + d1, 
+                                params={"Content-Type": "application/json"})
+        data_past = response_past.json()
+        
+        #Update the datafraem with the new information from the games of the day
+        old_standings = calculate_standings(data_past, old_standings)
+        
+        #Get the schedule from day onward
+        old_schedule = get_schedule(int(y1), int(m1), int(d1))
+        '''**************************************************************'''
+        
+        #Calculate the playoff odds for each team given the standings
+        updated = get_playoff_odds(old_standings, old_schedule, runs = 100)
+        
+        #Update the data table with new odds information
+        for index, row in updated.iterrows():
+            team_name = updated.at[index, 'name']
+            team_odds = updated.at[index, 'playoff']
+            
+            team_object = Odds.objects.filter(name = team_name)[0]
+            
+            previous_odds = team_object.get_values()
+            if previous_odds == [-1]:
+                team_object.set_values([team_odds])
+            else:
+                previous_odds.append(int(team_odds))
+                team_object.set_values(previous_odds)
+                
+            team_object.save()
+                
+        print(updated)
+        #print(updated)
+        
+        
     
 
 '''
@@ -82,15 +129,12 @@ def season_date_params(year, month, day):
     
     if month > 8: 
         start = year
-        end = year + 1
     else:
         start = year - 1
-        end = year
-    
     
     #Get past data from API
     response_past = requests.get(API_URL + "/api/v1/schedule?startDate=" + str(start) + "-8-1&endDate=" 
-                            + str(end) + "-" + str(month) + "-" + str(day), 
+                            + str(year) + "-" + str(month) + "-" + str(day), 
                             params={"Content-Type": "application/json"})
     season_data = response_past.json()
 
@@ -133,9 +177,6 @@ def get_dates(start, end):
         start_date += delta
 
     return dates
-        
-        
-    
 
 '''
 Returns every team and their current place in the standings
@@ -175,15 +216,41 @@ def get_teams():
     schedule = get_schedule(int(today[:4]), int(today[5:7]), int(today[8:10]))
     
     #Update the dataframe with data from the simmed season
-    df = get_playoff_odds(df, schedule)
+    df = get_all_odds(df, schedule)
 
     return df
 
+
 '''
-takes standings and runs simulations.
-returns playoff odds for each team
+Get the playoff odds for each team.
+MERGE WITH get_all_odds WHEN POSSIBLE TO REDUCDE REDUNDANCY
 '''
 def get_playoff_odds(df, schedule, runs = 5):
+    df = df.copy(deep=True)
+    
+    for i in range(runs):
+        simmed = simulate_season(df, schedule)
+        
+        #retrieve all playoff team information and winners from the simmed season
+        playoffs, pres_win, east_win, west_win, atl_teams, met_teams, \
+                ewc_teams, pac_teams, cen_teams, wwc_teams = get_playoff_teams(simmed)
+        
+        #For each team in the playoffs, add 1 playoff appearence to the database
+        for team in playoffs:
+            team_index = df.index[df['name'] == team][0]
+            df.at[team_index, 'playoff'] += 1
+            
+    for index, row in df.iterrows():
+        df.at[index, 'playoff'] *= 100 / runs
+            
+    return df
+    
+    
+'''
+takes standings and runs simulations.
+returns all odds for each team
+'''
+def get_all_odds(df, schedule, runs = 5):
     
     df = df.copy(deep=True)
     

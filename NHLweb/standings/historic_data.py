@@ -119,7 +119,6 @@ def calculate_standings(data, df):
     
     #Loop through all dates from the beginning of the season until the specified date
     for date in data["dates"]:
-        print(date["date"])
         for game in date["games"]:
             if game['gameType'] == 'R':
                 
