@@ -1,18 +1,22 @@
 from django.http import HttpResponse
 from django.template import loader
 
-from .models import Team, Odds
+from .models import Team
 
-from .tools import reload_teams, reset_odds
+from .teams import reload_teams
+from .odds import reset_odds
 
 def home(request):
     
     reload_standings = True
+    reload_graph = True
     
     #Reloads standing if needed
     if reload_standings:
         reload_teams()
-
+        
+    if reload_graph:
+        reset_odds()
 
     #Retrieve all teams and order them by points.
     team_list = Team.objects.order_by("-points")
@@ -24,10 +28,7 @@ def home(request):
         }
     
     
-    reload_graph = True
     
-    if reload_graph:
-        reset_odds()
     
     return HttpResponse(template.render(context, request))
     
