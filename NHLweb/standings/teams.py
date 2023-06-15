@@ -95,7 +95,9 @@ MERGE WITH get_all_odds WHEN POSSIBLE TO REDUCDE REDUNDANCY
 def get_playoff_odds(df, schedule, runs = 5):
     df = df.copy(deep=True)
     
-    for i in range(runs):
+    for index in range(runs):
+        if index % 100 == 0:
+            print(index)
         simmed = simulate_season(df, schedule)
         
         #retrieve all playoff team information and winners from the simmed season

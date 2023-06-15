@@ -58,7 +58,7 @@ def reset_odds():
         '''**************************************************************'''
         
         #Calculate the playoff odds for each team given the standings
-        updated = get_playoff_odds(old_standings, old_schedule, runs = 5000)
+        updated = get_playoff_odds(old_standings, old_schedule, runs = 1000)
         
         #Update the data table with new odds information
         for index, row in updated.iterrows():
@@ -71,7 +71,7 @@ def reset_odds():
             if previous_odds == [-1]:
                 team_object.set_values([team_odds])
             else:
-                previous_odds.append(int(team_odds))
+                previous_odds.append(float(team_odds))
                 team_object.set_values(previous_odds)
                 
             team_object.save()

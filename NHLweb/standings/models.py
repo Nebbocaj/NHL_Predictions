@@ -36,7 +36,7 @@ class Odds(models.Model):
     playoff = models.CharField(default = '-1', max_length = 1000)
     
     def get_values(self):
-        return list(map(int, self.playoff.split(',')))
+        return list(map(float, self.playoff.split(',')))
     
     def set_values(self, values):
         self.playoff = ','.join(map(str, values))
