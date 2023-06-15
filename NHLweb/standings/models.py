@@ -33,13 +33,14 @@ class Team(models.Model):
 
 class Odds(models.Model):
     name = models.CharField(max_length = 50, default = "")
-    playoff = models.CharField(default = '-1', max_length = 1000)
+    playoff = models.CharField(default = '-1', max_length = 2000)
     
     def get_values(self):
         return list(map(float, self.playoff.split(',')))
     
     def set_values(self, values):
-        self.playoff = ','.join(map(str, values))
+        rounded_values = [round(value, 1) for value in values]
+        self.playoff = ','.join(map(str, rounded_values))
         
     def __str__(self):
         return self.name

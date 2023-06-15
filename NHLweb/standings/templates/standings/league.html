@@ -14,7 +14,7 @@ th {
   text-align: left;
 }
 tr:nth-child(even) {
-  background-color: #D6EEEE;
+  background-color: #FCF5E5;
 }
 tr:nth-child(odd) {
   background-color: #FFFFFF;
@@ -23,72 +23,197 @@ tr:nth-child(odd) {
   display: flex;
   justify-content: center;
 }
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+}
 </style>
 
-<body style="background-color: AntiqueWhite">
-{% if team_list %}
-    <div class="table-container">
-        <table>
-        <tr style="height:25px">
-            <th>Team Name</th>
-            <th style="text-align: center;">Played</th>
-            <th style="text-align: center;">Wins</th>
-            <th style="text-align: center;">Losses</th>
-            <th style="text-align: center;">OTL</th>
-            <th style="text-align: center;">Points</th>
-            <th style="text-align: center;">Percent</th>
-            <th style="text-align: center;">RW</th>
-            <th style="text-align: center;">ROW</th>
-            <th style="text-align: center;">GF</th>
-            <th style="text-align: center;">GA</th>
-            <th style="text-align: center;">Diff</th>
-            <th style="text-align: center;">Playoff%</th>
-            <th style="text-align: center;">Pres%</th>
-            <th style="text-align: center;">Conf%</th>
-            <th style="text-align: center;">Div1%</th>
-            <th style="text-align: center;">Div2%</th>
-            <th style="text-align: center;">Div3%</th>
-            <th style="text-align: center;">WC1%</th>
-            <th style="text-align: center;">WC2%</th>
-        </tr>
-        {% for team in team_list %}
-        <tr style="height:25px">
-            <td style="width:175px">{{team.name}}</td>
-            <td style="text-align: center; width:70px">{{team.played}}</td>
-            <td style="text-align: center; width:70px">{{team.wins}}</td>
-            <td style="text-align: center; width:70px">{{team.losses}}</td>
-            <td style="text-align: center; width:70px">{{team.otl}}</td>
-            <td style="text-align: center; width:70px">{{team.points}}</td>
-            <td style="text-align: center; width:70px">{{team.pointPer}}</td>
-            <td style="text-align: center; width:70px">{{team.rw}}</td>
-            <td style="text-align: center; width:70px">{{team.row}}</td>
-            <td style="text-align: center; width:70px">{{team.goalsFor}}</td>
-            <td style="text-align: center; width:70px">{{team.goalsAgainst}}</td>
-            
-            
-            {% if team.goalDiff >= 0 %}
-                <td style="text-align: center; width:70px; color:green">+{{team.goalDiff}} </td>
-            {% else %}
-                <td style="text-align: center; width:70px; color:red">{{team.goalDiff}} </td>
-            {% endif %}
-            
-            <td style="text-align: center; width:70px">{{team.playoffOdds}}</td>
-            <td style="text-align: center; width:70px">{{team.presidentOdds}}</td>
-            <td style="text-align: center; width:70px">{{team.conferenceOdds}}</td>
-            <td style="text-align: center; width:70px">{{team.divisionOdds}}</td>
-            <td style="text-align: center; width:70px">{{team.div2Odds}}</td>
-            <td style="text-align: center; width:70px">{{team.div3Odds}}</td>
-            <td style="text-align: center; width:70px">{{team.wc1Odds}}</td>
-            <td style="text-align: center; width:70px">{{team.wc2Odds}}</td>
-            
-            
-        </tr>
-        {% endfor %}
-        </table>
-    </div>
-{% else %}
-    <p>No teams are available.</p>
-{% endif %}
+<body style="background-color: #FFFFFF">
+
+<h2>Tabs</h2>
+<p>Click on the buttons inside the tabbed menu:</p>
+
+<div class="tab">
+  <button class="tablinks" onclick="openCity(event, 'Standings')" id="defaultOpen">Standings</button>
+  <button class="tablinks" onclick="openCity(event, 'Odds')">Odds</button>
+</div>
+
+<div id="Standings" class="tabcontent">
+  {% if team_list %}
+      <div class="table-container">
+          <table>
+          <tr style="height:25px">
+              <th>Team Name</th>
+              <th style="text-align: center;">Played</th>
+              <th style="text-align: center;">Wins</th>
+              <th style="text-align: center;">Losses</th>
+              <th style="text-align: center;">OTL</th>
+              <th style="text-align: center;">Points</th>
+              <th style="text-align: center;">Playoff%</th>
+              <th style="text-align: center;">Pres%</th>
+              <th style="text-align: center;">Percent</th>
+              <th style="text-align: center;">RW</th>
+              <th style="text-align: center;">ROW</th>
+              <th style="text-align: center;">GF</th>
+              <th style="text-align: center;">GA</th>
+              <th style="text-align: center;">Diff</th>
+          </tr>
+          {% for team in team_list %}
+          <tr style="height:25px">
+              <td style="width:175px">{{team.name}}</td>
+              <td style="text-align: center; width:70px">{{team.played}}</td>
+              <td style="text-align: center; width:70px">{{team.wins}}</td>
+              <td style="text-align: center; width:70px">{{team.losses}}</td>
+              <td style="text-align: center; width:70px">{{team.otl}}</td>
+              <td style="text-align: center; width:70px">{{team.points}}</td>
+              
+              {% if team.playoffOdds >= 0.001 %}
+                  <td style="text-align: center; width:70px">{{team.playoffOdds}} </td>    
+              {% else %}
+                  <td style="text-align: center; width:70px"></td>
+              {% endif %}
+              
+              {% if team.presidentOdds >= 0.001 %}
+                  <td style="text-align: center; width:70px">{{team.presidentOdds}}</td>
+              {% else %}
+                  <td style="text-align: center; width:70px"></td>
+              {% endif %}
+              
+              <td style="text-align: center; width:70px">{{team.pointPer}}</td>
+              <td style="text-align: center; width:70px">{{team.rw}}</td>
+              <td style="text-align: center; width:70px">{{team.row}}</td>
+              <td style="text-align: center; width:70px">{{team.goalsFor}}</td>
+              <td style="text-align: center; width:70px">{{team.goalsAgainst}}</td>
+              
+              
+              {% if team.goalDiff >= 0 %}
+                  <td style="text-align: center; width:70px; color:green">+{{team.goalDiff}} </td>
+              {% else %}
+                  <td style="text-align: center; width:70px; color:red">{{team.goalDiff}} </td>
+              {% endif %}
+              
+              
+          </tr>
+          {% endfor %}
+          </table>
+      </div>
+  {% else %}
+      <p>No teams are available.</p>
+  {% endif %}
+</div>
+
+<div id="Odds" class="tabcontent">
+  {% if team_list %}
+      <div class="table-container">
+          <table>
+          <tr style="height:25px">
+              <th>Team Name</th>
+              <th style="text-align: center;">Played</th>
+              <th style="text-align: center;">Wins</th>
+              <th style="text-align: center;">Losses</th>
+              <th style="text-align: center;">OTL</th>
+              <th style="text-align: center;">Points</th>
+              <th style="text-align: center;">Playoff%</th>
+              <th style="text-align: center;">Pres%</th>
+              <th style="text-align: center;">Conf%</th>
+              <th style="text-align: center;">Div1%</th>
+              <th style="text-align: center;">Div2%</th>
+              <th style="text-align: center;">Div3%</th>
+              <th style="text-align: center;">WC1%</th>
+              <th style="text-align: center;">WC2%</th>
+          </tr>
+          {% for team in team_list %}
+          <tr style="height:25px">
+              <td style="width:175px">{{team.name}}</td>
+              <td style="text-align: center; width:70px">{{team.played}}</td>
+              <td style="text-align: center; width:70px">{{team.wins}}</td>
+              <td style="text-align: center; width:70px">{{team.losses}}</td>
+              <td style="text-align: center; width:70px">{{team.otl}}</td>
+              <td style="text-align: center; width:70px">{{team.points}}</td>
+              
+              {% if team.playoffOdds >= 0.001 %}
+                  <td style="text-align: center; width:70px">{{team.playoffOdds}} </td>    
+              {% else %}
+                  <td style="text-align: center; width:70px"></td>
+              {% endif %}
+              
+              {% if team.presidentOdds >= 0.001 %}
+                  <td style="text-align: center; width:70px">{{team.presidentOdds}}</td>
+              {% else %}
+                  <td style="text-align: center; width:70px"></td>
+              {% endif %}
+              
+              {% if team.conferenceOdds >= 0.001 %}
+                  <td style="text-align: center; width:70px">{{team.conferenceOdds}}</td>
+              {% else %}
+                  <td style="text-align: center; width:70px"></td>
+              {% endif %}
+              
+              {% if team.divisionOdds >= 0.001 %}
+                  <td style="text-align: center; width:70px">{{team.divisionOdds}}</td>
+              {% else %}
+                  <td style="text-align: center; width:70px"></td>
+              {% endif %}
+              
+              {% if team.div2Odds >= 0.001 %}
+                  <td style="text-align: center; width:70px">{{team.div2Odds}}</td>
+              {% else %}
+                  <td style="text-align: center; width:70px"></td>
+              {% endif %}
+              
+              {% if team.div3Odds >= 0.001 %}
+                  <td style="text-align: center; width:70px">{{team.div3Odds}}</td>
+              {% else %}
+                  <td style="text-align: center; width:70px"></td>
+              {% endif %}
+              
+              {% if team.wc1Odds >= 0.001 %}
+                  <td style="text-align: center; width:70px">{{team.wc1Odds}}</td>
+              {% else %}
+                  <td style="text-align: center; width:70px"></td>
+              {% endif %}
+              
+              {% if team.wc2Odds >= 0.001 %}
+                  <td style="text-align: center; width:70px">{{team.wc2Odds}}</td>
+              {% else %}
+                  <td style="text-align: center; width:70px"></td>
+              {% endif %}
+
+          </tr>
+          {% endfor %}
+          </table>
+      </div>
+  {% else %}
+      <p>No teams are available.</p>
+  {% endif %}
+</div>
+
+
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Set the "Standings" tab as the default active tab
+  document.getElementById("defaultOpen").click();
+});
+
+function openCity(evt, cityName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(cityName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+</script>
 
 </body>
 </html>
