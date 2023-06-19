@@ -127,65 +127,68 @@ h1 {
 </style>
 
 <body>
-  <div id="wrapper">
+    <div id="wrapper">
     <h1>Sortable Table of Search Queries</h1>
-
-    <table id="keywords" cellspacing="0" cellpadding="0">
-      <thead>
+        <table id="keywords" cellspacing="0" cellpadding="0">
+        <thead>
         <tr>
-          <th onclick="sortTable(0)"><span>Keywords</span></th>
-          <th onclick="sortTable(1)"><span>Impressions</span></th>
-          <th onclick="sortTable(2)"><span>Clicks</span></th>
-          <th onclick="sortTable(3)"><span>CTR</span></th>
-          <th onclick="sortTable(4)"><span>Rank</span></th>
+            <th onclick="sortTable(0)"><span>Team Name</span></th>
+            <th onclick="sortTable(1)"><span>Played</span></th>
+            <th onclick="sortTable(2)"><span>Wins</span></th>
+            <th onclick="sortTable(3)"><span>Losses</span></th>
+            <th onclick="sortTable(4)"><span>OTL</span></th>
+            <th onclick="sortTable(5)"><span>Points</span></th>
+            <th onclick="sortTable(6)"><span>Playoff%</span></th>
+            <th onclick="sortTable(7)"><span>Pres%</span></th>
+            <th onclick="sortTable(8)"><span>Percent</span></th>
+            <th onclick="sortTable(9)"><span>RW</span></th>
+            <th onclick="sortTable(10)"><span>ROW</span></th>
+            <th onclick="sortTable(11)"><span>GF</span></th>
+            <th onclick="sortTable(12)"><span>GA</span></th>
+            <th onclick="sortTable(13)"><span>Diff</span></th>
         </tr>
-      </thead>
-      <tbody>
+        </thead>
+        <tbody>
+        {% for team in team_list %}
         <tr>
-          <td class="lalign">silly tshirts</td>
-          <td>6000</td>
-          <td>110</td>
-          <td>1.8%</td>
-          <td>22.2</td>
+            <td>{{team.name}}</td>
+            <td>{{team.played}}</td>
+            <td>{{team.wins}}</td>
+            <td>{{team.losses}}</td>
+            <td>{{team.otl}}</td>
+            <td>{{team.points}}</td>
+            
+            {% if team.playoffOdds >= 0.001 %}
+                <td>{{team.playoffOdds}} </td>    
+            {% else %}
+                <td></td>
+            {% endif %}
+            
+            {% if team.presidentOdds >= 0.001 %}
+                <td>{{team.presidentOdds}}</td>
+            {% else %}
+                <td></td>
+            {% endif %}
+            
+            <td>{{team.pointPer}}</td>
+            <td>{{team.rw}}</td>
+            <td>{{team.row}}</td>
+            <td>{{team.goalsFor}}</td>
+            <td>{{team.goalsAgainst}}</td>
+            
+            
+            {% if team.goalDiff >= 0 %}
+                <td>+{{team.goalDiff}} </td>
+            {% else %}
+                <td>{{team.goalDiff}} </td>
+            {% endif %}
+            
+            
         </tr>
-        <tr>
-          <td class="lalign">desktop workspace photos</td>
-          <td>2200</td>
-          <td>500</td>
-          <td>22%</td>
-          <td>8.9</td>
-        </tr>
-        <tr>
-          <td class="lalign">arrested development quotes</td>
-          <td>13500</td>
-          <td>900</td>
-          <td>6.7%</td>
-          <td>12.0</td>
-        </tr>
-        <tr>
-          <td class="lalign">popular web series</td>
-          <td>8700</td>
-          <td>350</td>
-          <td>4%</td>
-          <td>7.0</td>
-        </tr>
-        <tr>
-          <td class="lalign">2013 webapps</td>
-          <td>9900</td>
-          <td>460</td>
-          <td>4.6%</td>
-          <td>11.5</td>
-        </tr>
-        <tr>
-          <td class="lalign">ring bananaphone</td>
-          <td>10500</td>
-          <td>748</td>
-          <td>7.1%</td>
-          <td>17.3</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+        {% endfor %}
+        </tbody>
+        </table>
+    </div>
 
   <script>
     function sortTable(columnIndex) {

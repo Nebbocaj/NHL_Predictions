@@ -9,6 +9,7 @@
 table, th, td {
   border:1px solid black;
   border-collapse: collapse;
+  text-align: center;
 }
 th {
   text-align: left;
@@ -43,22 +44,22 @@ tr:nth-child(odd) {
 <div id="Standings" class="tabcontent">
   {% if team_list %}
       <div class="table-container">
-          <table>
+          <table id="keywords" cellspacing="0" cellpadding="0">
           <tr style="height:25px">
-              <th>Team Name</th>
-              <th style="text-align: center;">Played</th>
-              <th style="text-align: center;">Wins</th>
-              <th style="text-align: center;">Losses</th>
-              <th style="text-align: center;">OTL</th>
-              <th style="text-align: center;">Points</th>
-              <th style="text-align: center;">Playoff%</th>
-              <th style="text-align: center;">Pres%</th>
-              <th style="text-align: center;">Percent</th>
-              <th style="text-align: center;">RW</th>
-              <th style="text-align: center;">ROW</th>
-              <th style="text-align: center;">GF</th>
-              <th style="text-align: center;">GA</th>
-              <th style="text-align: center;">Diff</th>
+              <th onclick="sortTable(0)">Team Name</th>
+              <th style="text-align: center;" onclick="sortTable(1)">Played</th>
+              <th onclick="sortTable(2)">Wins</th>
+              <th style="text-align: center;" onclick="sortTable(3)">Losses</th>
+              <th style="text-align: center;" onclick="sortTable(4)">OTL</th>
+              <th style="text-align: center;" onclick="sortTable(5)">Points</th>
+              <th style="text-align: center;" onclick="sortTable(6)">Playoff%</th>
+              <th style="text-align: center;" onclick="sortTable(7)">Pres%</th>
+              <th style="text-align: center;" onclick="sortTable(8)">Percent</th>
+              <th style="text-align: center;" onclick="sortTable(9)">RW</th>
+              <th style="text-align: center;" onclick="sortTable(10)">ROW</th>
+              <th style="text-align: center;" onclick="sortTable(11)">GF</th>
+              <th style="text-align: center;" onclick="sortTable(12)">GA</th>
+              <th style="text-align: center;" onclick="sortTable(13)">Diff</th>
           </tr>
           {% for team in team_list %}
           <tr style="height:25px">
@@ -107,7 +108,7 @@ tr:nth-child(odd) {
 <div id="Odds" class="tabcontent">
   {% if team_list %}
       <div class="table-container">
-          <table>
+          <table id="keywordll" cellspacing="0" cellpadding="0">
           <tr style="height:25px">
               <th>Team Name</th>
               <th style="text-align: center;">Played</th>
@@ -212,6 +213,55 @@ function openCity(evt, cityName) {
   }
   document.getElementById(cityName).style.display = "block";
   evt.currentTarget.className += " active";
+}
+
+function sortTable(columnIndex) {
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("keywords");
+  switching = true;
+  dir = "asc";
+
+  while (switching) {
+    switching = false;
+    rows = table.getElementsByTagName("tr");
+
+    for (i = 1; i < (rows.length - 1); i++) {
+      shouldSwitch = false;
+      x = rows[i].getElementsByTagName("td")[columnIndex];
+      y = rows[i + 1].getElementsByTagName("td")[columnIndex];
+
+      if (columnIndex === 0) {
+        xValue = x.innerHTML.toLowerCase();
+        yValue = y.innerHTML.toLowerCase();
+      } else {
+        xValue = parseFloat(x.innerHTML.replace(/[^0-9.-]+/g, ''));
+        yValue = parseFloat(y.innerHTML.replace(/[^0-9.-]+/g, ''));
+      }
+
+      if (dir === "asc") {
+        if (xValue > yValue) {
+          shouldSwitch = true;
+          break;
+        }
+      } else {
+        if (xValue < yValue) {
+          shouldSwitch = true;
+          break;
+        }
+      }
+    }
+
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      switchcount++;
+    } else {
+      if (switchcount === 0 && dir === "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
 }
 </script>
 
