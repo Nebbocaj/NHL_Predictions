@@ -124,6 +124,9 @@ h1 {
 #keywords tbody tr td.lalign {
   text-align: left;
 }
+.highlighted {
+  background-color: blue;
+}
 </style>
 
 <body>
@@ -132,7 +135,7 @@ h1 {
 
     <table id="keywords" cellspacing="0" cellpadding="0">
       <thead>
-        <tr>
+        <tr onmouseover="highlightRow(this)" onmouseout="removeHighlight(this)">
           <th onclick="sortTable(0)"><span>Keywords</span></th>
           <th onclick="sortTable(1)"><span>Impressions</span></th>
           <th onclick="sortTable(2)"><span>Clicks</span></th>
@@ -141,42 +144,42 @@ h1 {
         </tr>
       </thead>
       <tbody>
-        <tr>
+        <tr onmouseover="highlightRow(this)" onmouseout="removeHighlight(this)">
           <td class="lalign">silly tshirts</td>
           <td>6000</td>
           <td>110</td>
           <td>1.8%</td>
           <td>22.2</td>
         </tr>
-        <tr>
+        <tr onmouseover="highlightRow(this)" onmouseout="removeHighlight(this)">
           <td class="lalign">desktop workspace photos</td>
           <td>2200</td>
           <td>500</td>
           <td>22%</td>
           <td>8.9</td>
         </tr>
-        <tr>
+        <tr onmouseover="highlightRow(this)" onmouseout="removeHighlight(this)">
           <td class="lalign">arrested development quotes</td>
           <td>13500</td>
           <td>900</td>
           <td>6.7%</td>
           <td>12.0</td>
         </tr>
-        <tr>
+        <tr onmouseover="highlightRow(this)" onmouseout="removeHighlight(this)">
           <td class="lalign">popular web series</td>
           <td>8700</td>
           <td>350</td>
           <td>4%</td>
           <td>7.0</td>
         </tr>
-        <tr>
+        <tr onmouseover="highlightRow(this)" onmouseout="removeHighlight(this)">
           <td class="lalign">2013 webapps</td>
           <td>9900</td>
           <td>460</td>
           <td>4.6%</td>
           <td>11.5</td>
         </tr>
-        <tr>
+        <tr onmouseover="highlightRow(this)" onmouseout="removeHighlight(this)">
           <td class="lalign">ring bananaphone</td>
           <td>10500</td>
           <td>748</td>
@@ -188,6 +191,14 @@ h1 {
   </div>
 
   <script>
+
+function highlightRow(row) {
+  row.classList.add('highlighted');
+}
+
+function removeHighlight(row) {
+  row.classList.remove('highlighted');
+}
     function sortTable(columnIndex) {
       var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
       table = document.getElementById("keywords");
