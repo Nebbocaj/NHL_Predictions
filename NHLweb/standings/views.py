@@ -21,16 +21,13 @@ def home(request):
     #Retrieve all teams and order them by points.
     team_list = Team.objects.order_by("-points")
     
-    template = loader.get_template("standings/league.html")
+    template = loader.get_template("league.html")
     
     context = {
         "team_list": team_list,
         }
     
-    
-    
-    
     return HttpResponse(template.render(context, request))
-    
+
     
     
