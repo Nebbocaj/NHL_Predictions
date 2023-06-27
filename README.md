@@ -5,19 +5,9 @@ This is a website for making various predictions for the National Hockey League 
 ## Plan
 
 ### Team Playoff Prediction
-Each day during the regular season of the 2023/2024 season, the site will query the current standings for the NHL and store it in the website database. It will then convert that data into a temporary dataframe, run lots (10,000?) of season simulations, and provide odds for making the playoffs, winning the division, etc. Each of these odds will then be put back into the website database to display on the standings page. Each of the odds will also be stores in a separate table of historical playoff odds so that it can be displayed via a graph on a playoff prediction page.
-
-For now, there are some functions that allow standings to be calculated at a specific point of an NHL season. The functions are get_game_status, initialize_dataframe, calculate standings, and get_old_standings. They are for testing out odds from aspecific point as more features are developed over the summer. They also may be used later as a sort of playoff odds "time machine" on a separate page of the website.
-
-ETA July 1st
+The current functionality here is to provide a couple of basic tables that show the current team stats for all teams as well as the probability of a team making playoffs or winning specific titles. There are two main things that need to be done here. 1: add an ELO system to better model team statistics. 2: add Django channels so that the website will automatically update with new data in the morning after games (this may need to wait until October for east of implementation).
 
 ### Player Fantasy Point Prediction
-At the beginning of the NHL season, the goal of this part is to provide a model which can give estimates for goals, assists, hits, blocks, etc. for each player. It will then take all of these projected points and give an "expected fantasy points" score for each player based of a user's specific fantasy league rules. 
-
-ETA September 1st
+At the beginning of the NHL season, the goal of this part is to provide a model which can give estimates for goals, assists, hits, blocks, etc. for each player. It will then take all of these projected points and give an "expected fantasy points" score for each player based on a user's specific fantasy league rules. 
 
 
-### Individual Award Prediction
-The goal for this part is to be able to predict which players will earn each individual award given a specific point in the season. It will learn off of previous years data and award winners to predict the current year's award winner.
-
-ETA December 1st
