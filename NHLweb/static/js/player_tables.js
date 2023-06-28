@@ -1,85 +1,10 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-  <title>NHL Player Rankings</title>
-</head>
-
-<style>
-table, th, td {
-  border: 1px solid black;
-  border-top: none;
-  border-bottom: none;
-  padding: 8px;
-  border-collapse: collapse;
-  text-align: center;
-}
-tr:nth-child(even) {
-  background-color: #FCF5E5;
-}
-tr:nth-child(odd) {
-  background-color: #FFFFFF;
+function highlightRow(row) {
+    row.classList.add("highlighted-row");
 }
 
-.base-table {
-    width: 90%;
-    margin: 0 auto; 
-    border: 1px solid black;
-    border-collapse: collapse;
-    text-align: center;
+function unhighlightRow(row) {
+    row.classList.remove("highlighted-row");
 }
-
-tr.highlighted-row {
-    background-color: #FFD700; /* Customize with your desired highlight style */
-}
-
-tr:nth-child(even):not(.highlighted-row) {
-    background-color: #CED9E5;
-}
-
-tr:nth-child(odd):not(.highlighted-row) {
-    background-color: #FFFFFF;
-}
-</style>
-
-<body>
-
-<h2>Tabs</h2>
-<p>YAAAAAAAAAY, PLAYERS</p>
-
-<div id="Players" class="tabcontent">
-    <table id="player_table" class="base-table">
-    
-        <tr>
-            <th onclick="sortTable(0, 0)">Player</th>
-            <th onclick="sortTable(1, 0)">Year</th>
-            <th onclick="sortTable(2, 0)">G</th>
-            <th onclick="sortTable(3, 0)">A</th>
-
-        </tr>
-        
-        {% for stat in player_list %}
-            <tr onmouseenter="highlightRow(this)" onmouseleave="unhighlightRow(this)">
-                <td>{{stat.player.name}}</td>
-                <td>{{stat.season.year}}</td>
-                <td>{{stat.goals}}</td>
-                <td>{{stat.assists}}</td>
-                
-                
-            </tr>
-        {% endfor %}
-    </table>
-</div>
-
-<script>
-
-    function highlightRow(row) {
-        row.classList.add("highlighted-row");
-    }
-
-    function unhighlightRow(row) {
-        row.classList.remove("highlighted-row");
-    }
 
 document.addEventListener("DOMContentLoaded", function() {
   // Set the "Stats" tab as the default active tab
@@ -154,7 +79,3 @@ function sortTable(columnIndex, tabVal) {
     }
   }
 }
-</script>
-
-</body>
-</html>

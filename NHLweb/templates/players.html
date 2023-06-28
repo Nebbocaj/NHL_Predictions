@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<link rel="stylesheet" type="text/css" href="{% static '\css\table_style.css' %}">
+
+<head>
+  <title>NHL Player Rankings</title>
+</head>
+
+
+<body>
+
+<h2>Tabs</h2>
+<p>YAAAAAAAAAY, PLAYERS</p>
+
+<div id="Players" class="tabcontent">
+    <table id="player_table" class="base-table">
+    
+        <tr>
+            <th onclick="sortTable(0, 0)">Player</th>
+            <th onclick="sortTable(1, 0)">Year</th>
+            <th onclick="sortTable(2, 0)">G</th>
+            <th onclick="sortTable(3, 0)">A</th>
+
+        </tr>
+        
+        {% for stat in player_list %}
+            <tr onmouseenter="highlightRow(this)" onmouseleave="unhighlightRow(this)">
+                <td>{{stat.player.name}}</td>
+                <td>{{stat.season.year}}</td>
+                <td>{{stat.goals}}</td>
+                <td>{{stat.assists}}</td>
+                
+                
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<script src="{% static '\js\player_tables.js' %}"></script>
+
+</body>
+</html>
