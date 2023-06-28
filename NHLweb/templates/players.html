@@ -2,8 +2,13 @@
 <!DOCTYPE html>
 <html>
 
+<!-- import the css style sheet -->
 <link rel="stylesheet" type="text/css" href="{% static '\css\table_style.css' %}">
 
+<!-- import javascript file -->
+<script src="{% static '\js\player_tables.js' %}"></script>
+
+<!-- set title of the page -->
 <head>
   <title>NHL Player Rankings</title>
 </head>
@@ -14,17 +19,21 @@
 <h2>Tabs</h2>
 <p>YAAAAAAAAAY, PLAYERS</p>
 
+
+<!-- begin table -->
 <div id="Players" class="tabcontent">
     <table id="player_table" class="base-table">
     
+        <!-- create column headers-->
         <tr>
-            <th onclick="sortTable(0, 0)">Player</th>
-            <th onclick="sortTable(1, 0)">Year</th>
-            <th onclick="sortTable(2, 0)">G</th>
-            <th onclick="sortTable(3, 0)">A</th>
+            <th onclick="sortTable(0)">Player</th>
+            <th onclick="sortTable(1)">Year</th>
+            <th onclick="sortTable(2)">G</th>
+            <th onclick="sortTable(3)">A</th>
 
         </tr>
         
+        <!-- get data for each entry and add it to a new row -->
         {% for stat in player_list %}
             <tr onmouseenter="highlightRow(this)" onmouseleave="unhighlightRow(this)">
                 <td>{{stat.player.name}}</td>
@@ -38,7 +47,6 @@
     </table>
 </div>
 
-<script src="{% static '\js\player_tables.js' %}"></script>
-
 </body>
+
 </html>

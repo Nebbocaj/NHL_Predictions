@@ -2,7 +2,11 @@
 <!DOCTYPE html>
 <html>
 
+<!-- import css stlye sheet -->
 <link rel="stylesheet" type="text/css" href="{% static '\css\table_style.css' %}">
+
+<!-- import javascript file -->
+<script src="{% static '\js\standings_tables.js' %}"></script>
 
 <head>
   <title>NHL Predictions</title>
@@ -11,17 +15,17 @@
 
 <body>
 
-<h2>Tabs</h2>
-<p>Click on the buttons inside the tabbed menu:</p>
-
+<!-- add buttons to switch between tables  -->
 <div class="tab">
     <button class="tablinks" onclick="openCity(event, 'Stats')">Stats</button>
     <button class="tablinks" onclick="openCity(event, 'Odds')" id="defaultOpen">Odds</button>
 </div>
 
+<!-- begin stats table -->
 <div id="Stats" class="tabcontent">
     <table id="stat_table" class="base-table">
-    
+        
+        <!-- define headers for columns -->
         <tr>
             <th onclick="sortTable(0, 0)">Team Name</th>
             <th onclick="sortTable(1, 0)">Played</th>
@@ -39,6 +43,7 @@
             <th onclick="sortTable(13, 0)">Diff</th>
         </tr>
         
+        <!-- add each entry to a new row for every database entry -->
         {% for team in team_list %}
             <tr onmouseenter="highlightRow(this)" onmouseleave="unhighlightRow(this)">
                 <td>{{team.name}}</td>
@@ -79,7 +84,8 @@
 
 <div id="Odds" class="tabcontent">
     <table id="odds_table" class="base-table">
-    
+        
+        <!-- define headers for columns -->
         <tr>
             <th onclick="sortTable(0, 1)">Team Name</th>
             <th onclick="sortTable(1, 1)">Played</th>
@@ -97,6 +103,7 @@
             <th onclick="sortTable(13, 1)">WC2%</th>
         </tr>
         
+        <!-- add each entry to a new row for every database entry -->
         {% for team in team_list %}
             <tr onmouseenter="highlightRow(this)" onmouseleave="unhighlightRow(this)">
                 <td>{{team.name}}</td>
@@ -159,7 +166,7 @@
     </table>
 </div>
 
-<script src="{% static '\js\standings_tables.js' %}"></script>
+
 
 </body>
 </html>

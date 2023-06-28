@@ -1,3 +1,5 @@
+
+//highlight rows on mouseover
 function highlightRow(row) {
     row.classList.add("highlighted-row");
 }
@@ -6,34 +8,14 @@ function unhighlightRow(row) {
     row.classList.remove("highlighted-row");
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-  // Set the "Stats" tab as the default active tab
-  document.getElementById("defaultOpen").click();
-});
 
-
-function openCity(evt, cityName) {
-  var i, tabcontent, tablinks;
-  tabcontent = document.getElementsByClassName("tabcontent");
-  for (i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
-  }
-  tablinks = document.getElementsByClassName("tablinks");
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].className = tablinks[i].className.replace(" active", "");
-  }
-  document.getElementById(cityName).style.display = "block";
-  evt.currentTarget.className += " active";
-}
-
-function sortTable(columnIndex, tabVal) {
+//sort table by row when header is clicked
+function sortTable(columnIndex) {
   var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-  if (tabVal == 0){
-      table = document.getElementById("player_table");
-  }
-  else{
-      table = document.getElementById("odds_table");
-  }
+  
+  table = document.getElementById("player_table");
+
+
   switching = true;
   dir = "asc";
 

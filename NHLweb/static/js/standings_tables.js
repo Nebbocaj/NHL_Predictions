@@ -1,3 +1,5 @@
+
+//highlight row on mouseover
 function highlightRow(row) {
     row.classList.add("highlighted-row");
 }
@@ -6,11 +8,13 @@ function unhighlightRow(row) {
     row.classList.remove("highlighted-row");
 }
 
+//set odds table as default table
 document.addEventListener("DOMContentLoaded", function() {
   document.getElementById("defaultOpen").click();
 });
 
 
+//switch between the two tables on button click
 function openCity(evt, cityName) {
 
   var i, tabcontent, tablinks;
@@ -26,6 +30,7 @@ function openCity(evt, cityName) {
   evt.currentTarget.className += " active";
 }
 
+//sort the table by specific row
 function sortTable(columnIndex, tabVal) {
   var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
   if (tabVal == 0){

@@ -1,3 +1,4 @@
+/* format the table and cells */
 table, th, td {
   border: 1px solid black;
   border-top: none;
@@ -6,6 +7,8 @@ table, th, td {
   border-collapse: collapse;
   text-align: center;
 }
+
+/* set colors of alternating rows */
 tr:nth-child(even) {
   background-color: #FCF5E5;
 }
@@ -13,6 +16,7 @@ tr:nth-child(odd) {
   background-color: #FFFFFF;
 }
 
+/* set width and height of cells*/
 .base-table {
     width: 90%;
     margin: 0 auto; 
@@ -21,14 +25,14 @@ tr:nth-child(odd) {
     text-align: center;
 }
 
-tr.highlighted-row {
-    background-color: #FFD700; /* Customize with your desired highlight style */
-}
 
+/* highlight rows on mouseover */
+tr.highlighted-row {
+    background-color: #FFD700; 
+}
 tr:nth-child(even):not(.highlighted-row) {
     background-color: #CED9E5;
 }
-
 tr:nth-child(odd):not(.highlighted-row) {
     background-color: #FFFFFF;
 }
