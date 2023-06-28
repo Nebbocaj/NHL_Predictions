@@ -53,7 +53,7 @@ tr:nth-child(odd):not(.highlighted-row) {
 </div>
 
 <div id="Stats" class="tabcontent">
-    <table id="keywords" class="base-table">
+    <table id="stat_table" class="base-table">
     
         <tr>
             <th onclick="sortTable(0, 0)">Team Name</th>
@@ -111,7 +111,7 @@ tr:nth-child(odd):not(.highlighted-row) {
 </div>
 
 <div id="Odds" class="tabcontent">
-    <table id="keywords2" class="base-table">
+    <table id="odds_table" class="base-table">
     
         <tr>
             <th onclick="sortTable(0, 1)">Team Name</th>
@@ -229,10 +229,10 @@ function openCity(evt, cityName) {
 function sortTable(columnIndex, tabVal) {
   var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
   if (tabVal == 0){
-      table = document.getElementById("keywords");
+      table = document.getElementById("stat_table");
   }
   else{
-      table = document.getElementById("keywords2");
+      table = document.getElementById("odds_table");
   }
   switching = true;
   dir = "asc";

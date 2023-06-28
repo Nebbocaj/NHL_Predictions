@@ -37,7 +37,10 @@ def update_players():
         else:
             for s in ss:
                 stat = create_player_stats(p, s, 0, 0)
-        
+                print(f"Player: {stat.player.name}")
+                print(f"Season: {stat.season.year}")
+                print(f"Goals: {stat.goals}")
+                print(f"Assists: {stat.assists}")
 
 def create_player(player_name):
     player = Player.objects.create(name=player_name)
