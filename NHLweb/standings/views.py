@@ -8,8 +8,8 @@ from .odds import reset_odds
 
 def home(request):
     
-    reload_standings = False
-    reload_graph = False
+    reload_standings = True
+    reload_graph = True
     
     #Reloads standing if needed
     if reload_standings:

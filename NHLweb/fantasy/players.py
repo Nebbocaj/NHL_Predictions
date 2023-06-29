@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from datetime import date
 
-from .models import Player, Season, Stats
+from .models import Player, Season, Stats, Team
 
 API_URL = "https://statsapi.web.nhl.com"
 
@@ -17,14 +17,19 @@ def update_players():
     all_stats = Stats.objects.all()
     all_stats.delete()
     
+    team = Team.objects.create(name="BULLDOGS", division="X", conference="Y", acronym = "BDG", id_num=-1)
+    
     play_names = ["bob", "billy", "dipshit"]
     
     for player_name in play_names:
-        player = create_player(player_name)
+        player = create_player(player_name, team)
     
     season_year = [2021, 2022, 2023]
     for seas in season_year:
         season = create_season(seas)
+        
+
+
         
     ps = Player.objects.all()
     ss = Season.objects.all()
@@ -38,12 +43,14 @@ def update_players():
             for s in ss:
                 stat = create_player_stats(p, s, 0, 0)
                 print(f"Player: {stat.player.name}")
+                print(f"Team: {stat.player.team.acronym}")
                 print(f"Season: {stat.season.year}")
                 print(f"Goals: {stat.goals}")
                 print(f"Assists: {stat.assists}")
 
-def create_player(player_name):
-    player = Player.objects.create(name=player_name)
+
+def create_player(player_name, team):
+    player = Player.objects.create(name=player_name, team=team)
     return player
 
 def create_season(season_year):

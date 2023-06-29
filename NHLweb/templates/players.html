@@ -27,9 +27,10 @@
         <!-- create column headers-->
         <tr>
             <th onclick="sortTable(0)">Player</th>
-            <th onclick="sortTable(1)">Year</th>
-            <th onclick="sortTable(2)">G</th>
-            <th onclick="sortTable(3)">A</th>
+            <th onclick="sortTable(1)">Team</th>
+            <th onclick="sortTable(2)">Year</th>
+            <th onclick="sortTable(3)">G</th>
+            <th onclick="sortTable(4)">A</th>
 
         </tr>
         
@@ -37,6 +38,7 @@
         {% for stat in player_list %}
             <tr onmouseenter="highlightRow(this)" onmouseleave="unhighlightRow(this)">
                 <td>{{stat.player.name}}</td>
+                <td>{{stat.player.team.acronym}}</td>
                 <td>{{stat.season.year}}</td>
                 <td>{{stat.goals}}</td>
                 <td>{{stat.assists}}</td>
