@@ -14,7 +14,6 @@ def player_page(request):
         
     context = {
         "player_list": player_list
-        }
-    print(context)    
+        } 
     template = loader.get_template("players.html")
     return HttpResponse(template.render(context, request))

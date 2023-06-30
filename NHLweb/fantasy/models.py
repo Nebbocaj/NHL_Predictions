@@ -5,7 +5,7 @@ class Team(models.Model):
     name = models.CharField(max_length = 50, default = "")
     division = models.CharField(max_length = 50, default = "")
     conference = models.CharField(max_length = 50, default = "")
-    acronym = models.CharField(max_length = 3, default = "")
+    acronym = models.CharField(max_length = 3, default = "") #3 letter abreviation
     id_num = models.IntegerField(default = -1) #Id number for NHL api
     
     def __str__(self):
@@ -18,7 +18,14 @@ class Player(models.Model):
     name = models.CharField(max_length = 50, default = "")
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     
-    #Stats for year
+    number = models.IntegerField(default = -1)
+    age = models.IntegerField(default = -1)
+    height = models.CharField(max_length = 3, default = "X") #In foot, inches
+    weight = models.IntegerField(default = -1) #in pounds
+    id_num = models.IntegerField(default = -1) #Id num for NHL api
+    country = models.CharField(max_length = 20, default = "N/A")
+    position = models.CharField(max_length = 20, default = "N/A")
+    pos_code = models.CharField(max_length = 3, default = "X")
     
     def __str__(self):
         return self.name
@@ -33,8 +40,36 @@ class Season(models.Model):
 class Stats(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     season = models.ForeignKey(Season, on_delete=models.CASCADE)
+    
     goals = models.IntegerField(default = 0)
     assists = models.IntegerField(default = 0)
+    toi = models.CharField(max_length = 12, default = "N/A")
+    pim = models.IntegerField(default = 0)
+    shots = models.IntegerField(default = 0)
+    games = models.IntegerField(default = 0)
+    hits = models.IntegerField(default = 0)
+    blocks = models.IntegerField(default = 0)
+    plusMinus = models.IntegerField(default = 0)
+    points = models.IntegerField(default = 0)
+    shifts = models.IntegerField(default = 0)
+    
+    faceoffPct = models.FloatField(default = 0)
+    shotPct = models.FloatField(default = 0)
+    
+    powerPlayGoals = models.IntegerField(default = 0)
+    powerPlayPoints = models.IntegerField(default = 0)
+    powerPlayTOI = models.CharField(max_length = 12, default = "N/A")
+    shortHandGoals = models.IntegerField(default = 0)
+    shortHandPoints = models.IntegerField(default = 0)
+    shortHandTOI = models.CharField(max_length = 12, default = "N/A")
+    
+    gameWinningGoals = models.IntegerField(default = 0)
+    overtimeGoals = models.IntegerField(default = 0)
+    
+    evenTOI = models.CharField(max_length = 12, default = "N/A")
+    
+    fantasyPoints = models.IntegerField(default = 0)
+    
 
     def __str__(self):
         return f"{self.player.name} - {self.season.year}"

@@ -29,8 +29,18 @@
             <th onclick="sortTable(0)">Player</th>
             <th onclick="sortTable(1)">Team</th>
             <th onclick="sortTable(2)">Year</th>
-            <th onclick="sortTable(3)">G</th>
-            <th onclick="sortTable(4)">A</th>
+            <th onclick="sortTable(3)">GP</th>
+            <th onclick="sortTable(4)">G</th>
+            <th onclick="sortTable(5)">A</th>
+            <th onclick="sortTable(6)">P</th>
+            <th onclick="sortTable(7)">+/-</th>
+            <th onclick="sortTable(8)">PIM</th>
+            <th onclick="sortTable(9)">PPP</th>
+            <th onclick="sortTable(10)">SHP</th>
+            <th onclick="sortTable(11)">SOG</th>
+            <th onclick="sortTable(12)">HIT</th>
+            <th onclick="sortTable(13)">BLK</th>
+            <th onclick="sortTable(13)">Fantasy PTS</th>
 
         </tr>
         
@@ -40,8 +50,19 @@
                 <td>{{stat.player.name}}</td>
                 <td>{{stat.player.team.acronym}}</td>
                 <td>{{stat.season.year}}</td>
+                <td>{{stat.games}}</td>
                 <td>{{stat.goals}}</td>
                 <td>{{stat.assists}}</td>
+                <td>{{stat.points}}</td>
+                <td>{{stat.plusMinus}}</td>
+                <td>{{stat.pim}}</td>
+                <td>{{stat.powerPlayPoints}}</td>
+                <td>{{stat.shortHandPoints}}</td>
+                <td>{{stat.shots}}</td>
+                <td>{{stat.hits}}</td>
+                <td>{{stat.blocks}}</td>
+                <td>{{stat.fantasyPoints}}</td>
+                
                 
                 
             </tr>
