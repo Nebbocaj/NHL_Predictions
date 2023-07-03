@@ -32,6 +32,7 @@ class Player(models.Model):
     
 class Season(models.Model):
     year = models.IntegerField()
+    current_season = models.BooleanField(default = False) #marks which season is the current season
     
     def __str__(self):
         return str(self.year)

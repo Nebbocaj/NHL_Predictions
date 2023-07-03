@@ -2,13 +2,13 @@ from django.http import HttpResponse
 from django.template import loader
 
 from .models import Player, Season, Stats
-from .players import update_players
+from .players import reset_data
 
 def player_page(request):
     
     reload_players = True
     if reload_players:
-        update_players()
+        reset_data()
         
     player_list = Stats.objects.order_by("-goals")
         
