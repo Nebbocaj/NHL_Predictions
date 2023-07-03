@@ -6,7 +6,7 @@ from .players import reset_data
 
 def player_page(request):
     
-    reload_players = True
+    reload_players = False
     if reload_players:
         reset_data()
         

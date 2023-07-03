@@ -41,6 +41,7 @@ class Season(models.Model):
 class Stats(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     season = models.ForeignKey(Season, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
     
     goals = models.IntegerField(default = 0)
     assists = models.IntegerField(default = 0)

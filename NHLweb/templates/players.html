@@ -48,7 +48,7 @@
         {% for stat in player_list %}
             <tr onmouseenter="highlightRow(this)" onmouseleave="unhighlightRow(this)">
                 <td>{{stat.player.name}}</td>
-                <td>{{stat.player.team.acronym}}</td>
+                <td>{{stat.team.acronym}}</td>
                 <td>{{stat.season.year}}</td>
                 <td>{{stat.games}}</td>
                 <td>{{stat.goals}}</td>
