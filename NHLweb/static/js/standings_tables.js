@@ -84,3 +84,4 @@ function sortTable(columnIndex, tabVal) {
     }
   }
 }
+
