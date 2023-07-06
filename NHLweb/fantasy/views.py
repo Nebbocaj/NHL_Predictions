@@ -11,6 +11,7 @@ def player_page(request):
     if reload_players:
         reset_data()
         
+    #Determine how the data should be sorted
     sort_column = request.GET.get('sort', 'goals')
     sort_direction = request.GET.get('dir', 'desc')
     
@@ -22,13 +23,12 @@ def player_page(request):
         
     player_list = Stats.objects.filter(season__year=2023).order_by(f"{prefix}{sort_column}")
     
-    
+    #Create pages
     paginator = Paginator(player_list, 50)
     page_number = request.GET.get('page', 1)
-    
     page = paginator.get_page(page_number)
         
-    print(sort_column, sort_direction)
+
     context = {
         "player_list": page,
         "sort_column": sort_column,

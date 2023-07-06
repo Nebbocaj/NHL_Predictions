@@ -1,0 +1,123 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<!-- import css stlye sheet -->
+<link rel="stylesheet" type="text/css" href="{% static '\css\table_style.css' %}">
+
+<!-- import javascript file -->
+<script src="{% static '\js\table_highlight.js' %}"></script>
+
+<head>
+  <title>NHL Predictions</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="../">Playoff Odds</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="../standings">Standings</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../players">Players</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div id="Odds" class="tabcontent">
+    <table id="odds_table" class="base-table">
+        
+        <!-- define headers for columns -->
+        <tr>
+            <th><a href="?page=1&sort=name&dir={% if sort_column == 'name' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">Team Name</a></th>
+            <th><a href="?page=1&sort=played&dir={% if sort_column == 'played' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">Played</a></th>
+            <th><a href="?page=1&sort=wins&dir={% if sort_column == 'wins' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">Wins</a></th>
+            <th><a href="?page=1&sort=losses&dir={% if sort_column == 'losses' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">Losses</a></th>
+            <th><a href="?page=1&sort=otl&dir={% if sort_column == 'otl' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">OTL</a></th>
+            <th><a href="?page=1&sort=points&dir={% if sort_column == 'points' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">Points</a></th>
+            <th><a href="?page=1&sort=playoffOdds&dir={% if sort_column == 'playoffOdds' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">Playoff%</a></th>
+            <th><a href="?page=1&sort=presidentOdds&dir={% if sort_column == 'presidentOdds' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">Pres%</a></th>
+            <th><a href="?page=1&sort=conferenceOdds&dir={% if sort_column == 'conferenceOdds' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">Conf%</a></th>
+            <th><a href="?page=1&sort=divisionOdds&dir={% if sort_column == 'divisionOdds' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">Div1%</a></th>
+            <th><a href="?page=1&sort=div2Odds&dir={% if sort_column == 'div2Odds' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">Div2%</a></th>
+            <th><a href="?page=1&sort=div3Odds&dir={% if sort_column == 'div3Odds' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">Div3%</a></th>
+            <th><a href="?page=1&sort=wc1Odds&dir={% if sort_column == 'wc1Odds' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">WC1%</a></th>
+            <th><a href="?page=1&sort=wc2Odds&dir={% if sort_column == 'wc2Odds' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">WC2%</a></th>
+        </tr>
+        
+        <!-- add each entry to a new row for every database entry -->
+        {% for team in team_list %}
+            <tr onmouseenter="highlightRow(this)" onmouseleave="unhighlightRow(this)">
+                <td>{{team.name}}</td>
+                <td>{{team.played}}</td>
+                <td>{{team.wins}}</td>
+                <td>{{team.losses}}</td>
+                <td>{{team.otl}}</td>
+                <td>{{team.points}}</td>
+                
+                {% if team.playoffOdds >= 0.001 %}
+                    <td>{{team.playoffOdds}} </td>    
+                {% else %}
+                    <td></td>
+                {% endif %}
+                
+                {% if team.presidentOdds >= 0.001 %}
+                    <td>{{team.presidentOdds}}</td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+                
+                {% if team.conferenceOdds >= 0.001 %}
+                    <td>{{team.conferenceOdds}}</td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+                
+                {% if team.divisionOdds >= 0.001 %}
+                    <td>{{team.divisionOdds}}</td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+                
+                {% if team.div2Odds >= 0.001 %}
+                    <td>{{team.div2Odds}}</td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+                
+                {% if team.div3Odds >= 0.001 %}
+                    <td>{{team.div3Odds}}</td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+                
+                {% if team.wc1Odds >= 0.001 %}
+                    <td>{{team.wc1Odds}}</td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+                
+                {% if team.wc2Odds >= 0.001 %}
+                    <td>{{team.wc2Odds}}</td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+            
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+
+
+</body>
+</html>

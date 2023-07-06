@@ -36,3 +36,7 @@ tr:nth-child(even):not(.highlighted-row) {
 tr:nth-child(odd):not(.highlighted-row) {
     background-color: #FFFFFF;
 }
+
+a:link {
+  color: black;
+}

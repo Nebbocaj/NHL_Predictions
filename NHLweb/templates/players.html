@@ -6,7 +6,7 @@
 <link rel="stylesheet" type="text/css" href="{% static '\css\table_style.css' %}">
 
 <!-- import javascript file -->
-<script src="{% static '\js\player_tables.js' %}"></script>
+<script src="{% static '\js\table_highlight.js' %}"></script>
 
 <!-- set title of the page -->
 <head>
@@ -21,7 +21,10 @@
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
       <li class="nav-item active">
-        <a class="nav-link" href="../">Standings</a>
+        <a class="nav-link" href="../">Playoff Odds</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="../standings">Standings</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="../players">Players</a>
@@ -29,10 +32,6 @@
     </ul>
   </div>
 </nav>
-
-<h2>Tabs</h2>
-<p>YAAAAAAAAAY, PLAYERS</p>
-
 
 <!-- begin table -->
 <div id="Players" class="tabcontent">
