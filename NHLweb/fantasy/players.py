@@ -171,40 +171,63 @@ def create_player_stats(stat_dict):
     return stat
 
 
-    # all_players = Player.objects.all()
-    # all_players.delete()
-    # all_seasons = Season.objects.all()
-    # all_seasons.delete()
-    # all_stats = Stats.objects.all()
-    # all_stats.delete()
+'''
+Calculates the fantasy points from any season based on the scoring system provided
+'''
+def get_fantasy_points():
     
-    # team = Team.objects.create(name="BULLDOGS", division="X", conference="Y", acronym = "BDG", id_num=-1)
+    #NOTE: default scoring system
+    #Dynamic scoring system based on user input will be provided later.
+    scoring = {
+        'goals' : 2,
+        'assists' : 1,
+        'toi' : 0,
+        'pim' : 0,
+        'shots' : 0.1,
+        'games' : 0,
+        'hits' : 0.1,
+        'blocks' : 0.5,
+        'plusMinus' : 0,
+        'points' : 0,
+        'shifts' : 0,
+        'faceoffPct' : 0,
+        'shotPct' : 0,
+        'powerPlayGoals' : 0,
+        'powerPlayPoints' : 0.5,
+        'powerPlayTOI' : 0,
+        'shortHandGoals' : 0,
+        'shortHandPoints' : 0.5,
+        'shortHandTOI' : 0,
+        'gameWinningGoals' : 0,
+        'overtimeGoals' : 0,
+        'evenTOI' : 0,
+        }
     
-    # play_names = ["bob", "billy", "dipshit"]
+    #Access dictionary
+    goals = scoring["goals"]
+    assists = scoring["assists"]
+    blocks = scoring["blocks"]
+    shots = scoring["shots"]
+    hits = scoring["hits"]
+    PPP = scoring["powerPlayPoints"]
+    SHP = scoring["shortHandPoints"]
+     
+    all_stats = Stats.objects.all()
     
-    # for player_name in play_names:
-    #     player = create_player(player_name, team)
+    updated_stats = []
     
-    # season_year = [2021, 2022, 2023]
-    # for seas in season_year:
-    #     season = create_season(seas)
-        
+    for stat in all_stats:
+        stat.fantasyPoints = 0
+        stat.fantasyPoints = round(goals * stat.goals
+            + assists * stat.assists
+            + blocks * stat.blocks
+            + shots * stat.shots
+            + hits * stat.hits
+            + PPP * stat.powerPlayPoints
+            + SHP * stat.shortHandPoints, 1
+        )
+        updated_stats.append(stat)
+    
+    Stats.objects.bulk_update(updated_stats, ['fantasyPoints'])
 
-
-        
-    # ps = Player.objects.all()
-    # ss = Season.objects.all()
     
-    
-    # for p in ps:
-    #     if p.name == "dipshit":
-    #         s = Season.objects.get(year = 2022)
-    #         stat = create_player_stats(p, s, 0, 0)
-    #     else:
-    #         for s in ss:
-    #             stat = create_player_stats(p, s, 0, 0)
-    #             print(f"Player: {stat.player.name}")
-    #             print(f"Team: {stat.player.team.acronym}")
-    #             print(f"Season: {stat.season.year}")
-    #             print(f"Goals: {stat.goals}")
-    #             print(f"Assists: {stat.assists}")

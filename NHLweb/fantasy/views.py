@@ -3,13 +3,15 @@ from django.template import loader
 from django.core.paginator import Paginator
 
 from .models import Player, Season, Stats
-from .players import reset_data
+from .players import reset_data, get_fantasy_points
 
 def player_page(request):
     
     reload_players = False
     if reload_players:
         reset_data()
+        
+    get_fantasy_points()
         
     #Determine how the data should be sorted
     sort_column = request.GET.get('sort', 'goals')
