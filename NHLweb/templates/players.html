@@ -33,6 +33,13 @@
   </div>
 </nav>
 
+
+<form action = "" method = "post">
+    {% csrf_token %}
+    {{form }}
+    <input type="submit" value=Submit>
+</form>
+
 <!-- begin table -->
 <div id="Players" class="tabcontent">
     <table id="player_table" class="base-table">
@@ -40,6 +47,7 @@
         <!-- create column headers-->
         <tr>
             <th><a href="?page=1&sort=player__name&dir={% if sort_column == 'player__name' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">Player</a></th>
+            <th>POS</th>
             <th><a href="?page=1&sort=team__acronym&dir={% if sort_column == 'team__acronym' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">Team</a></th>
             <th><a href="?page=1&sort=season__year&dir={% if sort_column == 'season__year' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">Year</a></th>
             <th><a href="?page=1&sort=games&dir={% if sort_column == 'games' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">GP</a></th>
@@ -61,6 +69,7 @@
         {% for stat in player_list %}
             <tr onmouseenter="highlightRow(this)" onmouseleave="unhighlightRow(this)">
                 <td>{{stat.player.name}}</td>
+                <td>{{stat.player.pos_code}}</td>
                 <td>{{stat.team.acronym}}</td>
                 <td>{{stat.season.year}}</td>
                 <td>{{stat.games}}</td>
