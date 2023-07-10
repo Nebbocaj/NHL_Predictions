@@ -44,6 +44,29 @@ TEAM_CHOICES = [
     ('WPG', 'Winnipeg Jets')
     ]
 
+YEAR_CHOICES = [
+    ('all', 'All'),
+    ('2006', '2006'),
+    ('2007', '2007'),
+    ('2008', '2008'),
+    ('2009', '2009'),
+    ('2010', '2010'),
+    ('2011', '2011'),
+    ('2012', '2012'),
+    ('2013', '2013'),
+    ('2014', '2014'),
+    ('2015', '2015'),
+    ('2016', '2016'),
+    ('2017', '2017'),
+    ('2018', '2018'),
+    ('2019', '2019'),
+    ('2020', '2020'),
+    ('2021', '2021'),
+    ('2022', '2022'),
+    ('2023', '2023'),
+    ]
+
 class InputForm(forms.Form):
+    year = forms.CharField(label='Season:', widget=forms.Select(choices=YEAR_CHOICES), initial='all')
     team = forms.CharField(label='Team:', widget=forms.Select(choices=TEAM_CHOICES), initial='all')
     position = forms.CharField(label='Position:', widget=forms.Select(choices=POSITION_CHOICES), initial='all')

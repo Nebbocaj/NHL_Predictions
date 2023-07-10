@@ -40,3 +40,9 @@ tr:nth-child(odd):not(.highlighted-row) {
 a:link {
   color: black;
 }
+
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
