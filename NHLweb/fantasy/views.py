@@ -12,13 +12,14 @@ def player_page(request):
     
     form = InputForm()
     
-    position = 'all'
-    team = 'all'
     #If the request comes from the "filter" method in the html
     #Add filters to position or team
     if request.method == 'POST':
-        team = request.POST.get('team', None)
-        position = request.POST.get('position', None) 
+        team = request.POST.get('team', 'all')
+        position = request.POST.get('position', 'all') 
+    else:
+        team = request.GET.get('team', 'all')
+        position = request.GET.get('pos', 'all') 
 
     #Reload stats if needed. Mostly used for debugging or production
     reload_players = False
@@ -62,6 +63,8 @@ def player_page(request):
         "sort_column": sort_column,
         "sort_direction": sort_direction,
         "page_number": page_number,
+        "team": team,
+        "position": position,
         "form": form,
     }
     

@@ -46,22 +46,22 @@
     
         <!-- create column headers-->
         <tr>
-            <th><a href="?page=1&sort=player__name&dir={% if sort_column == 'player__name' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">Player</a></th>
+            <th><a href="?page=1&sort=player__name&dir={% if sort_column == 'player__name' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}&team={{team}}&pos={{position}}">Player</a></th>
             <th>POS</th>
-            <th><a href="?page=1&sort=team__acronym&dir={% if sort_column == 'team__acronym' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">Team</a></th>
-            <th><a href="?page=1&sort=season__year&dir={% if sort_column == 'season__year' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">Year</a></th>
-            <th><a href="?page=1&sort=games&dir={% if sort_column == 'games' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">GP</a></th>
-            <th><a href="?page=1&sort=goals&dir={% if sort_column == 'goals' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">G</a></th>
-            <th><a href="?page=1&sort=assists&dir={% if sort_column == 'assists' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">A</a></th>
-            <th><a href="?page=1&sort=points&dir={% if sort_column == 'points' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">P</a></th>
-            <th><a href="?page=1&sort=plusMinus&dir={% if sort_column == 'plusMinus' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">+/-</a></th>
-            <th><a href="?page=1&sort=pim&dir={% if sort_column == 'pim' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">PIM</a></th>
-            <th><a href="?page=1&sort=powerPlayPoints&dir={% if sort_column == 'powerPlayPoints' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">PPP</a></th>
-            <th><a href="?page=1&sort=shortHandPoints&dir={% if sort_column == 'shortHandPoints' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">SHP</a></th>
-            <th><a href="?page=1&sort=shots&dir={% if sort_column == 'shots' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">SOG</a></th>
-            <th><a href="?page=1&sort=hits&dir={% if sort_column == 'hits' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">HIT</a></th>
-            <th><a href="?page=1&sort=blocks&dir={% if sort_column == 'blocks' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">BLK</a></th>
-            <th><a href="?page=1&sort=fantasyPoints&dir={% if sort_column == 'fantasyPoints' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}">Fantasy PTS</a></th>
+            <th><a href="?page=1&sort=team__acronym&dir={% if sort_column == 'team__acronym' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}&team={{team}}&pos={{position}}">Team</a></th>
+            <th><a href="?page=1&sort=season__year&dir={% if sort_column == 'season__year' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}&team={{team}}&pos={{position}}">Year</a></th>
+            <th><a href="?page=1&sort=games&dir={% if sort_column == 'games' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}&team={{team}}&pos={{position}}">GP</a></th>
+            <th><a href="?page=1&sort=goals&dir={% if sort_column == 'goals' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}&team={{team}}&pos={{position}}">G</a></th>
+            <th><a href="?page=1&sort=assists&dir={% if sort_column == 'assists' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}&team={{team}}&pos={{position}}">A</a></th>
+            <th><a href="?page=1&sort=points&dir={% if sort_column == 'points' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}&team={{team}}&pos={{position}}">P</a></th>
+            <th><a href="?page=1&sort=plusMinus&dir={% if sort_column == 'plusMinus' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}&team={{team}}&pos={{position}}">+/-</a></th>
+            <th><a href="?page=1&sort=pim&dir={% if sort_column == 'pim' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}&team={{team}}&pos={{position}}">PIM</a></th>
+            <th><a href="?page=1&sort=powerPlayPoints&dir={% if sort_column == 'powerPlayPoints' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}&team={{team}}&pos={{position}}">PPP</a></th>
+            <th><a href="?page=1&sort=shortHandPoints&dir={% if sort_column == 'shortHandPoints' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}&team={{team}}&pos={{position}}">SHP</a></th>
+            <th><a href="?page=1&sort=shots&dir={% if sort_column == 'shots' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}&team={{team}}&pos={{position}}">SOG</a></th>
+            <th><a href="?page=1&sort=hits&dir={% if sort_column == 'hits' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}&team={{team}}&pos={{position}}">HIT</a></th>
+            <th><a href="?page=1&sort=blocks&dir={% if sort_column == 'blocks' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}&team={{team}}&pos={{position}}">BLK</a></th>
+            <th><a href="?page=1&sort=fantasyPoints&dir={% if sort_column == 'fantasyPoints' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}&team={{team}}&pos={{position}}">Fantasy PTS</a></th>
 
         </tr>
         
@@ -93,7 +93,7 @@
 </div>
 
 {% if player_list.has_next %}
-  <a href="?page={{ player_list.next_page_number }}&sort={{sort_column}}&dir={{sort_direction}}">Load More</a>
+  <a href="?page={{ player_list.next_page_number }}&sort={{sort_column}}&dir={{sort_direction}}&team={{team}}&pos={{position}}">Load More</a>
 {% endif %}
 
 </body>
