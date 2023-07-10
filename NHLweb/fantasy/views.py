@@ -4,7 +4,7 @@ from django.core.paginator import Paginator
 
 from .models import Player, Season, Stats
 from .players import reset_data, get_fantasy_points
-from .forms import InputForm
+from .forms import InputForm, FantasyScoring
 
 from django.core.exceptions import *
 
@@ -62,12 +62,15 @@ def player_page(request):
         
     form = InputForm(initial={'year':season, 'team':team, 'position':position})
     
+    fant = FantasyScoring()
+    
     context = {
         "player_list": page,
         "sort_column": sort_column,
         "sort_direction": sort_direction,
         "page_number": page_number,
         "form": form,
+        "fant": fant
     }
     
     template = loader.get_template("players.html")

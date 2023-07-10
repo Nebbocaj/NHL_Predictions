@@ -181,7 +181,6 @@ def get_fantasy_points():
     scoring = {
         'goals' : 2,
         'assists' : 1,
-        'toi' : 0,
         'pim' : 0,
         'shots' : 0.1,
         'games' : 0,
@@ -190,17 +189,10 @@ def get_fantasy_points():
         'plusMinus' : 0,
         'points' : 0,
         'shifts' : 0,
-        'faceoffPct' : 0,
-        'shotPct' : 0,
-        'powerPlayGoals' : 0,
         'powerPlayPoints' : 0.5,
-        'powerPlayTOI' : 0,
-        'shortHandGoals' : 0,
         'shortHandPoints' : 0.5,
-        'shortHandTOI' : 0,
         'gameWinningGoals' : 0,
         'overtimeGoals' : 0,
-        'evenTOI' : 0,
         }
     
     #Access dictionary

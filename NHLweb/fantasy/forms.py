@@ -66,7 +66,25 @@ YEAR_CHOICES = [
     ('2023', '2023'),
     ]
 
+#This is the form for  filtering players
 class InputForm(forms.Form):
     year = forms.CharField(label='Season:', widget=forms.Select(choices=YEAR_CHOICES), initial='all')
     team = forms.CharField(label='Team:', widget=forms.Select(choices=TEAM_CHOICES), initial='all')
     position = forms.CharField(label='Position:', widget=forms.Select(choices=POSITION_CHOICES), initial='all')
+    
+#This is the form for customizing fantasy league points
+class FantasyScoring(forms.Form):
+    goals = forms.IntegerField(label='Goals:', initial=2)
+    assist = forms.IntegerField(label='Assists:', initial=1)
+    pim = forms.IntegerField(label='PIM:', initial=0)
+    shots = forms.IntegerField(label='Shots:', initial=0.1)
+    games = forms.IntegerField(label='GP:', initial=0)
+    hits = forms.IntegerField(label='Hits:', initial=0.1)
+    blocks = forms.IntegerField(label='Blocks:', initial=0.5)
+    plusMinus = forms.IntegerField(label='+/-:', initial=0)
+    points = forms.IntegerField(label='Points:', initial=0)
+    shifts = forms.IntegerField(label='Shifts:', initial=0)
+    ppp = forms.IntegerField(label='PPP:', initial=0.5)
+    shp = forms.IntegerField(label='SHP:', initial=0.5)
+    gwg = forms.IntegerField(label='GWG:', initial=0)
+    otg = forms.IntegerField(label='OTG:', initial=0)
