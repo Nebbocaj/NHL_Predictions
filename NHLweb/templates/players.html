@@ -33,12 +33,20 @@
   </div>
 </nav>
 
+
+
+
 <div class="form-container">
     <form id="filter" action = "" method = "post">
         {% csrf_token %}
-        <!-- {{fant}} -->
-        {{form}}
-        <input type="submit" value=Submit>
+        <div class="form-row">
+            {{fant}}
+            <input type="submit" name="fantasy_submit" value=Submit>
+        </div>
+        <div class="form-row">
+            {{form}}
+            <input type="submit" name="filter_submit" value=Submit>
+        </div>
     </form>
 </div>
 

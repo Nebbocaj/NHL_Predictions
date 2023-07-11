@@ -42,7 +42,17 @@ a:link {
 }
 
 .form-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center items horizontally */
+        justify-content: center; /* Center items vertically */
+    }
+
+    .form-container .form-row {
+        margin-bottom: 10px;
+        text-align: center; /* Center items horizontally within each row */
+    }
+  
+.small-input {
+        width: 45px; /* Adjust the width to your desired size */
+    }

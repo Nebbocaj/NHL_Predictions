@@ -174,35 +174,48 @@ def create_player_stats(stat_dict):
 '''
 Calculates the fantasy points from any season based on the scoring system provided
 '''
-def get_fantasy_points():
+def get_fantasy_points(values = None):
     
-    #NOTE: default scoring system
-    #Dynamic scoring system based on user input will be provided later.
-    scoring = {
-        'goals' : 2,
-        'assists' : 1,
-        'pim' : 0,
-        'shots' : 0.1,
-        'games' : 0,
-        'hits' : 0.1,
-        'blocks' : 0.5,
-        'plusMinus' : 0,
-        'points' : 0,
-        'shifts' : 0,
-        'powerPlayPoints' : 0.5,
-        'shortHandPoints' : 0.5,
-        'gameWinningGoals' : 0,
-        'overtimeGoals' : 0,
+    #Set the scoring values
+    if values == None:
+        scoring = {
+            'games': 0,
+            'goals': 2,
+            'assists': 1,
+            'points': 0,
+            'plusMinus': 0,
+            'pim': 0,
+            'ppp': 0.5,
+            'shp': 0.5,
+            'shots': 0.1,
+            'hits': 0.1,
+            'blocks': 0.5,
+            'shifts': 0,
+            'gwg': 0,
+            'otg': 0,
         }
+    else:
+        scoring = values
     
     #Access dictionary
-    goals = scoring["goals"]
-    assists = scoring["assists"]
-    blocks = scoring["blocks"]
-    shots = scoring["shots"]
-    hits = scoring["hits"]
-    PPP = scoring["powerPlayPoints"]
-    SHP = scoring["shortHandPoints"]
+    games = float(scoring["games"])
+    goals = float(scoring["goals"])
+    assists = float(scoring["assists"])
+    points = float(scoring["points"])
+    plusMinus = float(scoring["plusMinus"])
+    pim = float(scoring["pim"])
+    PPP = float(scoring["ppp"])
+    SHP = float(scoring["shp"])    
+    shots = float(scoring["shots"])
+    hits = float(scoring["hits"])
+    blocks = float(scoring["blocks"])
+    shifts = float(scoring["shifts"])
+    gwg = float(scoring["gwg"])
+    otg = float(scoring["otg"])
+
+
+    
+    print(goals, assists, blocks, shots, type(goals))
      
     all_stats = Stats.objects.all()
     
@@ -210,13 +223,20 @@ def get_fantasy_points():
     
     for stat in all_stats:
         stat.fantasyPoints = 0
-        stat.fantasyPoints = round(goals * stat.goals
+        stat.fantasyPoints = round(games * stat.games
+            + goals * stat.goals
             + assists * stat.assists
-            + blocks * stat.blocks
+            + points * stat.points
+            + plusMinus * stat.plusMinus
+            + pim * stat.pim
+            + PPP * stat.powerPlayPoints
+            + SHP * stat.shortHandPoints
             + shots * stat.shots
             + hits * stat.hits
-            + PPP * stat.powerPlayPoints
-            + SHP * stat.shortHandPoints, 1
+            + blocks * stat.blocks
+            + shifts  * stat.shifts
+            + gwg * stat.gameWinningGoals
+            + otg * stat.overtimeGoals, 1
         )
         updated_stats.append(stat)
     
