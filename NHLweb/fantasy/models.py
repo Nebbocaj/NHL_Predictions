@@ -76,3 +76,32 @@ class Stats(models.Model):
     def __str__(self):
         return f"{self.player.name} - {self.season.year}"
     
+class GoalieStats(models.Model):
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    season = models.ForeignKey(Season, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
+    
+    games = models.IntegerField(default = 0)
+    wins = models.IntegerField(default = 0)
+    losses = models.IntegerField(default = 0)
+    ot = models.IntegerField(default = 0)
+    shutouts = models.IntegerField(default = 0)
+    saves = models.IntegerField(default = 0)
+    
+    powerPlaySaves = models.IntegerField(default = 0)
+    shortHandSaves = models.IntegerField(default = 0)
+    evenSaves = models.IntegerField(default = 0)
+    powerPlayShots = models.IntegerField(default = 0)
+    shortHandShots = models.IntegerField(default = 0)
+    evenShots = models.IntegerField(default = 0)
+    
+    savePercentage = models.FloatField(default = 0)
+    goalAgainstAverage = models.FloatField(default = 0)
+    ppSavePercentage = models.FloatField(default = 0)
+    shSavePercentage = models.FloatField(default = 0)
+    evenSavePercentage = models.FloatField(default = 0)
+    
+    shotsAgainst = models.IntegerField(default = 0)
+    goalsAgainst = models.IntegerField(default = 0)
+    
+    toi = models.CharField(max_length = 12, default = "N/A")

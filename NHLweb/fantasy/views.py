@@ -16,7 +16,7 @@ def player_page(request):
         reset_data() 
     
     #Process the request and get information
-    player_list, sort_column, sort_direction, form, fant = process_request(request)
+    player_list, sort_column, sort_direction, form, fant = process_player_request(request)
     
     #Create pages
     paginator = Paginator(player_list, 50)
@@ -37,9 +37,11 @@ def player_page(request):
     template = loader.get_template("players.html")
     return HttpResponse(template.render(context, request))
 
+def goalie_page(request):
+    return HttpResponse("Hello, world!")
 
 #Process the request that the player page recieves
-def process_request(request):
+def process_player_request(request):
     #If the request comes from the "filter" method in the html
     #Add filters to position or team
     team = 'all'
