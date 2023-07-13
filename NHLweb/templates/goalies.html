@@ -60,20 +60,19 @@
         <!-- create column headers-->
         <tr>
             <th><a href="#" onclick="submitForm('?page=1&sort=player__name&dir={% if sort_column == 'player__name' and sort_direction == 'desc' %}asc{% else %}desc{% endif %}')">Player</a></th>
-            <th>POS</th>
             <th><a href="#" onclick="submitForm('?page=1&sort=team__acronym&dir={% if sort_column == 'team__acronym' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">Team</a></th>
             <th><a href="#" onclick="submitForm('?page=1&sort=season__year&dir={% if sort_column == 'season__year' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">Year</a></th>
             <th><a href="#" onclick="submitForm('?page=1&sort=games&dir={% if sort_column == 'games' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">GP</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=goals&dir={% if sort_column == 'goals' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">G</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=assists&dir={% if sort_column == 'assists' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">A</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=points&dir={% if sort_column == 'points' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">P</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=plusMinus&dir={% if sort_column == 'plusMinus' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">+/-</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=pim&dir={% if sort_column == 'pim' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">PIM</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=powerPlayPoints&dir={% if sort_column == 'powerPlayPoints' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">PPP</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=shortHandPoints&dir={% if sort_column == 'shortHandPoints' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">SHP</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=shots&dir={% if sort_column == 'shots' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">SOG</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=hits&dir={% if sort_column == 'hits' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">HIT</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=blocks&dir={% if sort_column == 'blocks' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">BLK</a></th>
+            <th><a href="#" onclick="submitForm('?page=1&sort=wins&dir={% if sort_column == 'wins' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">W</a></th>
+            <th><a href="#" onclick="submitForm('?page=1&sort=losses&dir={% if sort_column == 'losses' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">L</a></th>
+            <th><a href="#" onclick="submitForm('?page=1&sort=shutouts&dir={% if sort_column == 'shutouts' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">SO</a></th>
+            <th><a href="#" onclick="submitForm('?page=1&sort=saves&dir={% if sort_column == 'saves' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">Saves</a></th>
+            <th><a href="#" onclick="submitForm('?page=1&sort=goalsAgainst&dir={% if sort_column == 'goalsAgainst' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">GA</a></th>
+            <th><a href="#" onclick="submitForm('?page=1&sort=goalAgainstAverage&dir={% if sort_column == 'goalAgainstAverage' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">GAA</a></th>
+            <th><a href="#" onclick="submitForm('?page=1&sort=savePercentage&dir={% if sort_column == 'savePercentage' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">S%</a></th>
+            <th><a href="#" onclick="submitForm('?page=1&sort=ppSavePercentage&dir={% if sort_column == 'ppSavePercentage' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">PP S%</a></th>
+            <th><a href="#" onclick="submitForm('?page=1&sort=shSavePercentage&dir={% if sort_column == 'shSavePercentage' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">SH S%</a></th>
+            <th><a href="#" onclick="submitForm('?page=1&evenSavePercentage=blocks&dir={% if sort_column == 'evenSavePercentage' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">Even S%</a></th>
             <th><a href="#" onclick="submitForm('?page=1&sort=fantasyPoints&dir={% if sort_column == 'fantasyPoints' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">Fantasy PTS</a></th>
 
         </tr>
@@ -82,20 +81,19 @@
         {% for stat in player_list %}
             <tr onmouseenter="highlightRow(this)" onmouseleave="unhighlightRow(this)">
                 <td>{{stat.player.name}}</td>
-                <td>{{stat.player.pos_code}}</td>
                 <td>{{stat.team.acronym}}</td>
                 <td>{{stat.season.year}}</td>
                 <td>{{stat.games}}</td>
-                <td>{{stat.goals}}</td>
-                <td>{{stat.assists}}</td>
-                <td>{{stat.points}}</td>
-                <td>{{stat.plusMinus}}</td>
-                <td>{{stat.pim}}</td>
-                <td>{{stat.powerPlayPoints}}</td>
-                <td>{{stat.shortHandPoints}}</td>
-                <td>{{stat.shots}}</td>
-                <td>{{stat.hits}}</td>
-                <td>{{stat.blocks}}</td>
+                <td>{{stat.wins}}</td>
+                <td>{{stat.losses}}</td>
+                <td>{{stat.shutouts}}</td>
+                <td>{{stat.saves}}</td>
+                <td>{{stat.goalsAgainst}}</td>
+                <td>{{stat.goalAgainstAverage}}</td>
+                <td>{{stat.savePercentage}}</td>
+                <td>{{stat.ppSavePercentage}}</td>
+                <td>{{stat.shSavePercentage}}</td>
+                <td>{{stat.evenSavePercentage}}</td>
                 <td>{{stat.fantasyPoints}}</td>
                 
                 

@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from datetime import date
 
-from .models import Player, Season, Stats, Team
+from .models import Player, Season, Stats, Team, GoalieStats
 
 API_URL = "https://statsapi.web.nhl.com"
 CURRENT_SEASON = 2024
@@ -24,6 +24,8 @@ def reset_data():
     all_seasons.delete()
     all_stats = Stats.objects.all()
     all_stats.delete()
+    all_goalies = GoalieStats.objects.all()
+    all_goalies.delete()
     
     
     #Create all season objects from 1980 onward
@@ -62,12 +64,12 @@ def reset_data():
         'acronym' : 'PHX'
         }
     create_team(yotes)
-        
+
     index_list = [t.id_num for t in Team.objects.all()]
        
     #Loop through all teams to handle their rosters
     for i in index_list:
-        if i not in [11, 27]:
+        if i not in [11, 27]: #Ignore thrashers and Pheonix
             #Create player objects for each active player on the rosters
             roster_response = requests.get(API_URL + "/api/v1/teams/" + str(i) + "/roster", params={"Content-Type": "application/json"})
             roster_data = roster_response.json()
@@ -81,37 +83,38 @@ def reset_data():
             for person in roster_data["roster"]:
                 person_response = requests.get(API_URL + person["person"]["link"], params={"Content-Type": "application/json"})
                 person_data = person_response.json()
+            
+                #Create the dictionary of player data
+                player_dict = {
+                    'name' : person_data["people"][0]["fullName"],
+                    'team' : team_key,
+                    'number' : int(person_data["people"][0].get("primaryNumber",-1)),
+                    'age' : person_data["people"][0].get("currentAge", -1),
+                    'height' : person_data["people"][0].get("height", "N/A"),
+                    'weight' : person_data["people"][0].get("weight", -1),
+                    'id_num' : person_data["people"][0]["id"],
+                    'country' : person_data["people"][0].get("birthCountry", "N/A"),
+                    'position' : person_data["people"][0]["primaryPosition"].get("name", "N/A"),
+                    'pos_code' : person_data["people"][0]["primaryPosition"].get("abbreviation", "N/A")
+                    }
+                player_key = create_player(player_dict)
                 
-                if person['position']['name'] != 'Goalie':
-                    #Create the dictionary of player data
-                    player_dict = {
-                        'name' : person_data["people"][0]["fullName"],
-                        'team' : team_key,
-                        'number' : int(person_data["people"][0].get("primaryNumber",-1)),
-                        'age' : person_data["people"][0].get("currentAge", -1),
-                        'height' : person_data["people"][0].get("height", "N/A"),
-                        'weight' : person_data["people"][0].get("weight", -1),
-                        'id_num' : person_data["people"][0]["id"],
-                        'country' : person_data["people"][0].get("birthCountry", "N/A"),
-                        'position' : person_data["people"][0]["primaryPosition"].get("name", "N/A"),
-                        'pos_code' : person_data["people"][0]["primaryPosition"].get("abbreviation", "N/A")
-                        }
-                    player_key = create_player(player_dict)
-                    
-                    
-                    stat_response = requests.get(API_URL + person["person"]["link"] + "/stats?stats=yearByYear", params={"Content-Type": "application/json"})
-                    stat_data = stat_response.json()
-                    
-                    #Loop through each NHL season that a player has played
-                    for split in stat_data["stats"][0]["splits"]:
-                        if split["league"]["name"] == "National Hockey League":
-                            season_key = Season.objects.filter(year = int(split["season"][4:]))[0]
-                            try:
-                                old_team_key = Team.objects.filter(id_num = split["team"]["id"])[0]
-                            except:
-                                print(split["team"])
-                            
-                            
+                
+                stat_response = requests.get(API_URL + person["person"]["link"] + "/stats?stats=yearByYear", params={"Content-Type": "application/json"})
+                stat_data = stat_response.json()
+                
+                #Loop through each NHL season that a player has played
+                for split in stat_data["stats"][0]["splits"]:
+                    if split["league"]["name"] == "National Hockey League":
+                        season_key = Season.objects.filter(year = int(split["season"][4:]))[0]
+                        
+                        #Tries to retrieve the old team if it exists
+                        try:
+                            old_team_key = Team.objects.filter(id_num = split["team"]["id"])[0]
+                        except:
+                            print(split["team"])
+                        
+                        if player_key.pos_code != "G":
                             #Create stat dictionary with all information
                             stat_dict = {
                                 'player' : player_key,
@@ -141,6 +144,37 @@ def reset_data():
                                 'evenTOI' : split["stat"].get("evenTimeOnIce", 0),
                                 }
                             create_player_stats(stat_dict)
+                            
+                        else:
+                            goalie_dict = {
+                                'player' : player_key,
+                                'season' : season_key,
+                                'team' : old_team_key,
+                                
+                                'games' : split["stat"].get("games", 0),
+                                'wins' : split["stat"].get("wins", 0),
+                                'losses' : split["stat"].get("losses", 0),
+                                'ot' : split["stat"].get("ot", 0),
+                                'shutouts' : split["stat"].get("shutouts", 0),
+                                'saves' : split["stat"].get("saves", 0),
+                                
+                                'powerPlaySaves' : split["stat"].get("powerPlaySaves", 0),
+                                'shortHandSaves' : split["stat"].get("shortHandedSaves", 0),
+                                'evenSaves' : split["stat"].get("evenSaves", 0),
+                                'powerPlayShots' : split["stat"].get("powerPlayShots", 0),
+                                'shortHandShots' : split["stat"].get("shortHandedShots", 0),
+                                'evenShots' : split["stat"].get("evenShots", 0),
+                                
+                                'savePercentage' : round(split["stat"].get("savePercentage", 0),2),
+                                'goalAgainstAverage' : round(split["stat"].get("goalAgainstAverage", 0),2),
+                                'ppSavePercentage' : round(split["stat"].get("powerPlaySavePercentage", 0),2),
+                                'shSavePercentage' : round(split["stat"].get("shortHandedSavePercentage", 0),2),
+                                'evenSavePercentage' : round(split["stat"].get("evenStrengthSavePercentage", 0),2),
+                                
+                                'shotsAgainst' : split["stat"].get("shotsAgainst", 0),
+                                'goalsAgainst' : split["stat"].get("goalsAgainst", 0),
+                                }
+                            create_goalie_stats(goalie_dict)
     
 
 '''
@@ -156,6 +190,13 @@ Creates a player in the database
 def create_player(player_dict):
     player = Player.objects.create(**player_dict)
     return player
+
+'''
+Creates a goalie in the database
+'''    
+def create_goalie_stats(goalie_dict):
+    goalie = GoalieStats.objects.create(**goalie_dict)
+    return goalie
 
 '''
 Creates a season in the database
@@ -240,5 +281,52 @@ def get_fantasy_points(values = None):
     
     #save database
     Stats.objects.bulk_update(updated_stats, ['fantasyPoints'])
+    
+    
+'''
+Calculates the fantasy points from any season based on the scoring system provided for goalies
+'''
+def get_fantasy_goalie_points(values = None):
+    
+    #Set the scoring values
+    if values == None:
+        scoring = {
+            'games': 0,
+            'wins': 4,
+            'losses': 0,
+            'shutouts': 3,
+            'saves': 0.2,
+            'goalsAgainst': -2,
+        }
+    else:
+        scoring = values
+    
+    #Access dictionary
+    games = float(scoring["games"])
+    wins = float(scoring["wins"])
+    losses = float(scoring["losses"])
+    shutouts = float(scoring["shutouts"])
+    saves = float(scoring["saves"])
+    goalsAgainst = float(scoring["goalsAgainst"])
+
+     
+    #Get all objects
+    all_stats = GoalieStats.objects.all()
+    
+    #Calculate score for each stat objects
+    updated_stats = []
+    for stat in all_stats:
+        stat.fantasyPoints = 0
+        stat.fantasyPoints = round(games * stat.games
+            + wins * stat.wins
+            + losses * stat.losses
+            + shutouts * stat.shutouts
+            + saves * stat.saves
+            + goalsAgainst * stat.goalsAgainst
+        )
+        updated_stats.append(stat)
+    
+    #save database
+    GoalieStats.objects.bulk_update(updated_stats, ['fantasyPoints'])
 
     

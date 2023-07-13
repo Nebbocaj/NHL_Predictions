@@ -105,3 +105,5 @@ class GoalieStats(models.Model):
     goalsAgainst = models.IntegerField(default = 0)
     
     toi = models.CharField(max_length = 12, default = "N/A")
+    
+    fantasyPoints = models.FloatField(default = 0)

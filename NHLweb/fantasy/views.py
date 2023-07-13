@@ -2,17 +2,19 @@ from django.http import HttpResponse
 from django.template import loader
 from django.core.paginator import Paginator
 
-from .models import Player, Season, Stats
-from .players import reset_data, get_fantasy_points
-from .forms import InputForm, FantasyScoring
+from .models import Player, Season, Stats, GoalieStats
+from .players import reset_data, get_fantasy_points, get_fantasy_goalie_points
+from .forms import InputForm, FantasyScoring, GoalieInputForm, GoalieFantasyScoring
 
 from django.core.exceptions import *
 
+RELOAD_PLAYERS = False
+
+#View function for the player page
 def player_page(request):
     
     #Reload stats if needed. Mostly used for debugging or production
-    reload_players = False
-    if reload_players:
+    if RELOAD_PLAYERS:
         reset_data() 
     
     #Process the request and get information
@@ -37,8 +39,34 @@ def player_page(request):
     template = loader.get_template("players.html")
     return HttpResponse(template.render(context, request))
 
+#View function for the goalie page
 def goalie_page(request):
-    return HttpResponse("Hello, world!")
+    
+    #Reload stats if needed. Mostly used for debugging or production
+    if RELOAD_PLAYERS:
+        reset_data() 
+    
+    #Process the request and get information
+    player_list, sort_column, sort_direction, form, fant = process_goalie_request(request)
+    
+    #Create pages
+    paginator = Paginator(player_list, 50)
+    page_number = request.GET.get('page', 1)
+    page = paginator.get_page(page_number)
+    
+    #Collect data to send to template
+    context = {
+        "player_list": page,
+        "sort_column": sort_column,
+        "sort_direction": sort_direction,
+        "page_number": page_number,
+        "form": form,
+        "fant": fant
+    }
+    
+    #Load template
+    template = loader.get_template("goalies.html")
+    return HttpResponse(template.render(context, request))
 
 #Process the request that the player page recieves
 def process_player_request(request):
@@ -108,6 +136,66 @@ def process_player_request(request):
     
     if position != 'all':
         player_list = player_list.filter(player__pos_code=position)
+    
+    player_list = player_list.order_by(f"{prefix}{sort_column}")
+    
+    return player_list, sort_column, sort_direction, form, fant
+
+#Process the request that the player page recieves
+def process_goalie_request(request):
+    #If the request comes from the "filter" method in the html
+    #Add filters to position or team
+    team = 'all'
+    season = 'all'
+    if request.method == 'POST':
+        
+        #Gather filter form data
+        season = request.POST.get('year', 'all')
+        team = request.POST.get('team', 'all')
+        form = GoalieInputForm(initial={'year':season, 'team':team})
+        
+        #Gather fantasy form data
+        fantasyData = {
+            'games': request.POST.get('games', 0),
+            'wins': request.POST.get('wins', 0),
+            'losses': request.POST.get('losses', 0),
+            'shutouts': request.POST.get('shutouts', 0),
+            'saves': request.POST.get('saves', 0),
+            'goalsAgainst' : request.POST.get('goalsAgainst', 0),
+        }
+        fant = GoalieFantasyScoring(initial=fantasyData)
+        
+        
+        if 'fantasy_submit' in request.POST:
+            get_fantasy_goalie_points(fantasyData)
+            
+    else:
+        form = GoalieInputForm()
+        fant = GoalieFantasyScoring()
+        get_fantasy_points()
+
+
+        
+        
+    #Determine how the data should be sorted
+    sort_column = request.GET.get('sort', 'fantasyPoints')
+    sort_direction = request.GET.get('dir', 'desc')
+    
+    #Set the sort direction based on input
+    if sort_direction == 'desc':
+        prefix = "-"
+    else:
+        prefix = ""
+    
+    
+    #Get all stat objects that satisfy the specified filters.
+    player_list = GoalieStats.objects.all()
+    
+    if season != 'all':
+        player_list = player_list.filter(season__year=int(season))
+
+    if team != 'all':
+        player_list = player_list.filter(team__acronym=team)
     
     player_list = player_list.order_by(f"{prefix}{sort_column}")
     

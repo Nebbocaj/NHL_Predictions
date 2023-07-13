@@ -72,6 +72,11 @@ class InputForm(forms.Form):
     team = forms.CharField(label='Team:', widget=forms.Select(choices=TEAM_CHOICES), initial='all')
     position = forms.CharField(label='Position:', widget=forms.Select(choices=POSITION_CHOICES), initial='all')
     
+#This is the form for  filtering goalies
+class GoalieInputForm(forms.Form):
+    year = forms.CharField(label='Season:', widget=forms.Select(choices=YEAR_CHOICES), initial='all')
+    team = forms.CharField(label='Team:', widget=forms.Select(choices=TEAM_CHOICES), initial='all')
+    
 #This is the form for customizing fantasy league points
 class FantasyScoring(forms.Form):
     games = forms.IntegerField(label='GP:', initial=0, widget=forms.NumberInput(attrs={'class': 'small-input'}))
@@ -89,3 +94,12 @@ class FantasyScoring(forms.Form):
     shifts = forms.IntegerField(label='Shifts:', initial=0, widget=forms.NumberInput(attrs={'class': 'small-input'}))
     gwg = forms.IntegerField(label='GWG:', initial=0, widget=forms.NumberInput(attrs={'class': 'small-input'}))
     otg = forms.IntegerField(label='OTG:', initial=0, widget=forms.NumberInput(attrs={'class': 'small-input'}))
+    
+#This is the form for customizing fantasy league points for goalies
+class GoalieFantasyScoring(forms.Form):
+    games = forms.IntegerField(label='GP:', initial=0, widget=forms.NumberInput(attrs={'class': 'small-input'}))
+    wins = forms.IntegerField(label='W:', initial=4, widget=forms.NumberInput(attrs={'class': 'small-input'}))
+    losses = forms.IntegerField(label='L:', initial=0, widget=forms.NumberInput(attrs={'class': 'small-input'}))
+    shutouts = forms.IntegerField(label='SO:', initial=3, widget=forms.NumberInput(attrs={'class': 'small-input'}))
+    saves = forms.IntegerField(label='Saves:', initial=0.2, widget=forms.NumberInput(attrs={'class': 'small-input'}))
+    goalsAgainst = forms.IntegerField(label='GA:', initial=-2, widget=forms.NumberInput(attrs={'class': 'small-input'}))
