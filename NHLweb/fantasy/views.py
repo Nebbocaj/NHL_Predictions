@@ -4,6 +4,8 @@ from django.core.paginator import Paginator
 
 from .players import reset_data
 
+from .models import Player, Season, Stats, GoalieStats
+
 from .view_process import process_player_request, process_goalie_request
 
 RELOAD_PLAYERS = False
@@ -35,6 +37,31 @@ def player_page(request):
     
     #Load template
     template = loader.get_template("players.html")
+    return HttpResponse(template.render(context, request))
+
+
+def player_details(request, id_num):
+    
+    person = Player.objects.filter(id_num=id_num)[0]
+    details = Stats.objects.filter(player=person)
+    
+    context = {
+        "player_list": details
+        }
+    
+    template = loader.get_template("players_details.html")
+    return HttpResponse(template.render(context, request))
+
+def goalie_details(request, id_num):
+    
+    person = Player.objects.filter(id_num=id_num)[0]
+    details = GoalieStats.objects.filter(player=person)
+    
+    context = {
+        "player_list": details
+        }
+    
+    template = loader.get_template("goalies_details.html")
     return HttpResponse(template.render(context, request))
 
 #View function for the goalie page

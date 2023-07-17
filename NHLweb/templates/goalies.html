@@ -80,7 +80,7 @@
         <!-- get data for each entry and add it to a new row -->
         {% for stat in player_list %}
             <tr onmouseenter="highlightRow(this)" onmouseleave="unhighlightRow(this)">
-                <td>{{stat.player.name}}</td>
+                <td><a href="{% url 'goalie_details' stat.player.id_num %}">{{stat.player.name}}</a></td>
                 <td>{{stat.team.acronym}}</td>
                 <td>{{stat.season.year}}</td>
                 <td>{{stat.games}}</td>
