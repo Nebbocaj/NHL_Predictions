@@ -7,108 +7,113 @@
 
 <!-- import javascript file -->
 <script src="{% static '\js\table_highlight.js' %}"></script>
-
-<!-- set title of the page -->
 <head>
-  <title>NHL Player Rankings</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-</head>
-
-
-<body>
-
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav">
-      <li class="nav-item active">
-        <a class="nav-link" href="{% url 'team_odds'%}">Playoff Odds</a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="{% url 'team_standings'%}">Standings</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'player_page'%}">Players</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'goalie_page'%}">Goalies</a>
-      </li>
-    </ul>
-  </div>
-</nav>
-
-
-
-
-<div class="form-container">
-    <form id="filter" action = "" method = "post">
-        {% csrf_token %}
-        <div class="form-row">
-            {{fant}}
-            <input type="submit" name="fantasy_submit" value=Submit>
-        </div>
-        <div class="form-row">
-            {{form}}
-            <input type="submit" name="filter_submit" value=Submit>
-        </div>
-    </form>
-</div>
-
-<!-- begin table -->
-<div id="Players" class="tabcontent">
-    <table id="player_table" class="base-table">
+    <title>NHL Predictions</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>  
     
-        <!-- create column headers-->
-        <tr>
-            <th><a href="#" onclick="submitForm('?page=1&sort=player__name&dir={% if sort_column == 'player__name' and sort_direction == 'desc' %}asc{% else %}desc{% endif %}')">Player</a></th>
-            <th>POS</th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=team__acronym&dir={% if sort_column == 'team__acronym' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">Team</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=season__year&dir={% if sort_column == 'season__year' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">Year</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=games&dir={% if sort_column == 'games' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">GP</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=goals&dir={% if sort_column == 'goals' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">G</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=assists&dir={% if sort_column == 'assists' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">A</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=points&dir={% if sort_column == 'points' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">P</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=plusMinus&dir={% if sort_column == 'plusMinus' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">+/-</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=pim&dir={% if sort_column == 'pim' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">PIM</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=powerPlayPoints&dir={% if sort_column == 'powerPlayPoints' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">PPP</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=shortHandPoints&dir={% if sort_column == 'shortHandPoints' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">SHP</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=shots&dir={% if sort_column == 'shots' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">SOG</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=hits&dir={% if sort_column == 'hits' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">HIT</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=blocks&dir={% if sort_column == 'blocks' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">BLK</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=fantasyPoints&dir={% if sort_column == 'fantasyPoints' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">Fantasy PTS</a></th>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>  
+    
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css"
+        rel="stylesheet" type="text/css" />  
+</head>
+<body>
+    
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="{% url 'team_odds'%}">Playoff Odds</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="{% url 'team_standings'%}">Standings</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'player_page'%}">Players</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'goalie_page'%}">Goalies</a>
+          </li>
+          <li class="nav-item active">
+            <form id="playerForm" method="POST" action="{% url 'player_details' 0 %}">
+                {% csrf_token %}
+                <input type="text" id="tags" name="player_name">
+                <input type="submit" value="Submit">
+            </form>
+          </li>
+        </ul>
+      </div>
+    </nav>
 
-        </tr>
+    <div class="form-container">
+        <form id="filter" action = "" method = "post">
+            {% csrf_token %}
+            <div class="form-row">
+                {{fant}}
+                <input type="submit" name="fantasy_submit" value=Submit>
+            </div>
+            <div class="form-row">
+                {{form}}
+                <input type="submit" name="filter_submit" value=Submit>
+            </div>
+        </form>
+    </div>
+
+    <!-- begin table -->
+    <div id="Players" class="tabcontent">
+        <table id="player_table" class="base-table">
         
-        <!-- get data for each entry and add it to a new row -->
-        {% for stat in player_list %}
-            <tr onmouseenter="highlightRow(this)" onmouseleave="unhighlightRow(this)">
-                <td><a href="{% url 'player_details' stat.player.id_num %}">{{stat.player.name}}</a></td>
-                <td>{{stat.player.pos_code}}</td>
-                <td>{{stat.team.acronym}}</td>
-                <td>{{stat.season.year}}</td>
-                <td>{{stat.games}}</td>
-                <td>{{stat.goals}}</td>
-                <td>{{stat.assists}}</td>
-                <td>{{stat.points}}</td>
-                <td>{{stat.plusMinus}}</td>
-                <td>{{stat.pim}}</td>
-                <td>{{stat.powerPlayPoints}}</td>
-                <td>{{stat.shortHandPoints}}</td>
-                <td>{{stat.shots}}</td>
-                <td>{{stat.hits}}</td>
-                <td>{{stat.blocks}}</td>
-                <td>{{stat.fantasyPoints}}</td>
-                
-                
-                
+            <!-- create column headers-->
+            <tr>
+                <th><a href="#" onclick="submitForm('?page=1&sort=player__name&dir={% if sort_column == 'player__name' and sort_direction == 'desc' %}asc{% else %}desc{% endif %}')">Player</a></th>
+                <th>POS</th>
+                <th><a href="#" onclick="submitForm('?page=1&sort=team__acronym&dir={% if sort_column == 'team__acronym' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">Team</a></th>
+                <th><a href="#" onclick="submitForm('?page=1&sort=season__year&dir={% if sort_column == 'season__year' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">Year</a></th>
+                <th><a href="#" onclick="submitForm('?page=1&sort=games&dir={% if sort_column == 'games' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">GP</a></th>
+                <th><a href="#" onclick="submitForm('?page=1&sort=goals&dir={% if sort_column == 'goals' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">G</a></th>
+                <th><a href="#" onclick="submitForm('?page=1&sort=assists&dir={% if sort_column == 'assists' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">A</a></th>
+                <th><a href="#" onclick="submitForm('?page=1&sort=points&dir={% if sort_column == 'points' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">P</a></th>
+                <th><a href="#" onclick="submitForm('?page=1&sort=plusMinus&dir={% if sort_column == 'plusMinus' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">+/-</a></th>
+                <th><a href="#" onclick="submitForm('?page=1&sort=pim&dir={% if sort_column == 'pim' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">PIM</a></th>
+                <th><a href="#" onclick="submitForm('?page=1&sort=powerPlayPoints&dir={% if sort_column == 'powerPlayPoints' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">PPP</a></th>
+                <th><a href="#" onclick="submitForm('?page=1&sort=shortHandPoints&dir={% if sort_column == 'shortHandPoints' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">SHP</a></th>
+                <th><a href="#" onclick="submitForm('?page=1&sort=shots&dir={% if sort_column == 'shots' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">SOG</a></th>
+                <th><a href="#" onclick="submitForm('?page=1&sort=hits&dir={% if sort_column == 'hits' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">HIT</a></th>
+                <th><a href="#" onclick="submitForm('?page=1&sort=blocks&dir={% if sort_column == 'blocks' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">BLK</a></th>
+                <th><a href="#" onclick="submitForm('?page=1&sort=fantasyPoints&dir={% if sort_column == 'fantasyPoints' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">Fantasy PTS</a></th>
+
             </tr>
-        {% endfor %}
-    </table>
-</div>
+            
+            <!-- get data for each entry and add it to a new row -->
+            {% for stat in player_list %}
+                <tr onmouseenter="highlightRow(this)" onmouseleave="unhighlightRow(this)">
+                    <td><a href="{% url 'player_details' stat.player.id_num %}">{{stat.player.name}}</a></td>
+                    <td>{{stat.player.pos_code}}</td>
+                    <td>{{stat.team.acronym}}</td>
+                    <td>{{stat.season.year}}</td>
+                    <td>{{stat.games}}</td>
+                    <td>{{stat.goals}}</td>
+                    <td>{{stat.assists}}</td>
+                    <td>{{stat.points}}</td>
+                    <td>{{stat.plusMinus}}</td>
+                    <td>{{stat.pim}}</td>
+                    <td>{{stat.powerPlayPoints}}</td>
+                    <td>{{stat.shortHandPoints}}</td>
+                    <td>{{stat.shots}}</td>
+                    <td>{{stat.hits}}</td>
+                    <td>{{stat.blocks}}</td>
+                    <td>{{stat.fantasyPoints}}</td>
+                    
+                    
+                    
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
 
-{% if player_list.has_next %}
-  <a href="?page={{ player_list.next_page_number }}&sort={{sort_column}}&dir={{sort_direction}}&team={{team}}&pos={{position}}">Load More</a>
-{% endif %}
-
+    {% if player_list.has_next %}
+      <a href="?page={{ player_list.next_page_number }}&sort={{sort_column}}&dir={{sort_direction}}&team={{team}}&pos={{position}}">Load More</a>
+    {% endif %}
 </body>
 
 <script>
@@ -117,6 +122,31 @@
     form.action = url;
     form.submit();
   }
-</script>
+  
+  $(function() {
+      var availableTags = [
+          {% for player in players %}
+              "{{ player.name }} {{player.team.acronym}}",
+          {% endfor %}
+      ];
 
+      $("#tags").autocomplete({
+          source: function(request, response) {
+              var term = request.term.toLowerCase();
+              var filteredTags = [];
+              for (var i = 0; i < availableTags.length; i++) {
+                  var tag = availableTags[i].toLowerCase();
+                  if (tag.indexOf(term) === 0) {
+                      filteredTags.push(availableTags[i]);
+                  }
+                  if (filteredTags.length === 10) {
+                      break;
+                  }
+              }
+              response(filteredTags);
+          }
+      });
+      
+  });
+</script>
 </html>

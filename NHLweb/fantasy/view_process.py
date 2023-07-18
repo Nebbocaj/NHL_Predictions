@@ -74,7 +74,9 @@ def process_player_request(request):
     
     player_list = player_list.order_by(f"{prefix}{sort_column}")
     
-    return player_list, sort_column, sort_direction, form, fant
+    players = Player.objects.all()
+    
+    return players, player_list, sort_column, sort_direction, form, fant
 
 #Process the request that the player page recieves
 def process_goalie_request(request):
@@ -134,4 +136,6 @@ def process_goalie_request(request):
     
     player_list = player_list.order_by(f"{prefix}{sort_column}")
     
-    return player_list, sort_column, sort_direction, form, fant
+    players = Player.objects.all()
+    
+    return players, player_list, sort_column, sort_direction, form, fant
