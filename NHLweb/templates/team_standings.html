@@ -17,24 +17,7 @@
 
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav">
-      <li class="nav-item active">
-        <a class="nav-link" href="{% url 'team_odds'%}">Playoff Odds</a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="{% url 'team_standings'%}">Standings</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'player_page'%}">Players</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'goalie_page'%}">Goalies</a>
-      </li>
-    </ul>
-  </div>
-</nav>
+{% include 'navbar.html' %}
 
 
 <!-- begin stats table -->

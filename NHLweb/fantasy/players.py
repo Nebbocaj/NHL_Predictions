@@ -165,16 +165,82 @@ def reset_data():
                                 'shortHandShots' : split["stat"].get("shortHandedShots", 0),
                                 'evenShots' : split["stat"].get("evenShots", 0),
                                 
-                                'savePercentage' : round(split["stat"].get("savePercentage", 0),2),
-                                'goalAgainstAverage' : round(split["stat"].get("goalAgainstAverage", 0),2),
-                                'ppSavePercentage' : round(split["stat"].get("powerPlaySavePercentage", 0),2),
-                                'shSavePercentage' : round(split["stat"].get("shortHandedSavePercentage", 0),2),
-                                'evenSavePercentage' : round(split["stat"].get("evenStrengthSavePercentage", 0),2),
+                                'savePercentage' : round(split["stat"].get("savePercentage", 0),3),
+                                'goalAgainstAverage' : round(split["stat"].get("goalAgainstAverage", 0),3),
+                                'ppSavePercentage' : round(split["stat"].get("powerPlaySavePercentage", 0),3),
+                                'shSavePercentage' : round(split["stat"].get("shortHandedSavePercentage", 0),3),
+                                'evenSavePercentage' : round(split["stat"].get("evenStrengthSavePercentage", 0),3),
                                 
                                 'shotsAgainst' : split["stat"].get("shotsAgainst", 0),
                                 'goalsAgainst' : split["stat"].get("goalsAgainst", 0),
                                 }
                             create_goalie_stats(goalie_dict)
+                            
+                #Create current season objects.
+                if player_key.pos_code != "G":      
+                    current = Season.objects.filter(year = CURRENT_SEASON)[0]
+                    stat_dict = {
+                        'player' : player_key,
+                        'season' : current,
+                        'team' : team_key,
+                        'goals' : 0,
+                        'assists' : 0,
+                        'toi' : "0:0",
+                        'pim' : 0,
+                        'shots' : 0,
+                        'games' : 0,
+                        'hits' : 0,
+                        'blocks' : 0,
+                        'plusMinus' : 0,
+                        'points' : 0,
+                        'shifts' : 0,
+                        'faceoffPct' : 0,
+                        'shotPct' : 0,
+                        'powerPlayGoals' : 0,
+                        'powerPlayPoints' : 0,
+                        'powerPlayTOI' : 0,
+                        'shortHandGoals' : 0,
+                        'shortHandPoints' : 0,
+                        'shortHandTOI' : 0,
+                        'gameWinningGoals' : 0,
+                        'overtimeGoals' : 0,
+                        'evenTOI' : 0,
+                        }
+                    create_player_stats(stat_dict)
+                    
+                else:
+                    current = Season.objects.filter(year = CURRENT_SEASON)[0]
+                    goalie_dict = {
+                        'player' : player_key,
+                        'season' : current,
+                        'team' : team_key,
+                        
+                        'games' : 0,
+                        'wins' : 0,
+                        'losses' : 0,
+                        'ot' : 0,
+                        'shutouts' : 0,
+                        'saves' : 0,
+                        
+                        'powerPlaySaves' : 0,
+                        'shortHandSaves' : 0,
+                        'evenSaves' : 0,
+                        'powerPlayShots' : 0,
+                        'shortHandShots' : 0,
+                        'evenShots' : 0,
+                        
+                        'savePercentage' : 0,
+                        'goalAgainstAverage' : 0,
+                        'ppSavePercentage' : 0,
+                        'shSavePercentage' : 0,
+                        'evenSavePercentage' : 0,
+                        
+                        'shotsAgainst' : 0,
+                        'goalsAgainst' : 0,
+                        }
+                    create_goalie_stats(goalie_dict)
+                
+                
     
 
 '''

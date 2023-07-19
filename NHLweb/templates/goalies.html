@@ -12,43 +12,10 @@
 <head>
     <title>NHL Predictions</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>  
-    
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>  
-    
-    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css"
-        rel="stylesheet" type="text/css" />  
 </head>
 <body>
     
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item active">
-            <a class="nav-link" href="{% url 'team_odds'%}">Playoff Odds</a>
-          </li>
-          <li class="nav-item active">
-            <a class="nav-link" href="{% url 'team_standings'%}">Standings</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'player_page'%}">Players</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'goalie_page'%}">Goalies</a>
-          </li>
-          <li class="nav-item active">
-            <form id="playerForm" method="POST" action="{% url 'player_details' 0 %}">
-                {% csrf_token %}
-                <input type="text" id="tags" name="player_name">
-                <input type="submit" value="Submit">
-            </form>
-          </li>
-        </ul>
-      </div>
-    </nav>
-
-
-
+{% include 'navbar.html' %}
 
 <div class="form-container">
     <form id="filter" action = "" method = "post">
@@ -119,39 +86,5 @@
 {% endif %}
 
 </body>
-
-<script>
-  function submitForm(url) {
-    var form = document.getElementById("filter");
-    form.action = url;
-    form.submit();
-  }
-  
-  $(function() {
-      var availableTags = [
-          {% for player in players %}
-              "{{ player.name }} {{player.team.acronym}}",
-          {% endfor %}
-      ];
-
-      $("#tags").autocomplete({
-          source: function(request, response) {
-              var term = request.term.toLowerCase();
-              var filteredTags = [];
-              for (var i = 0; i < availableTags.length; i++) {
-                  var tag = availableTags[i].toLowerCase();
-                  if (tag.indexOf(term) === 0) {
-                      filteredTags.push(availableTags[i]);
-                  }
-                  if (filteredTags.length === 10) {
-                      break;
-                  }
-              }
-              response(filteredTags);
-          }
-      });
-      
-  });
-</script>
 
 </html>

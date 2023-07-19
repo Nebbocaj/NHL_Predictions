@@ -77,7 +77,9 @@ def player_details(request, id_num):
     person = Player.objects.filter(id_num=id_num)[0]
     details = Stats.objects.filter(player=person)
     
+    players = Player.objects.all()
     context = {
+        "players": players,
         "player_list": details
         }
     
@@ -90,7 +92,9 @@ def goalie_details(request, id_num):
     person = Player.objects.filter(id_num=id_num)[0]
     details = GoalieStats.objects.filter(player=person)
     
+    players = Player.objects.all()
     context = {
+        "players": players,
         "player_list": details
         }
     
