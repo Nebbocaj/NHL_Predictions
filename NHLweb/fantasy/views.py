@@ -131,3 +131,7 @@ def goalie_page(request):
     template = loader.get_template("goalies.html")
     return HttpResponse(template.render(context, request))
 
+
+def testing(request):
+    return HttpResponse("Hello, world!")
+
