@@ -166,10 +166,10 @@ def reset_data():
                                 'evenShots' : split["stat"].get("evenShots", 0),
                                 
                                 'savePercentage' : round(split["stat"].get("savePercentage", 0),3),
-                                'goalAgainstAverage' : round(split["stat"].get("goalAgainstAverage", 0),3),
-                                'ppSavePercentage' : round(split["stat"].get("powerPlaySavePercentage", 0),3),
-                                'shSavePercentage' : round(split["stat"].get("shortHandedSavePercentage", 0),3),
-                                'evenSavePercentage' : round(split["stat"].get("evenStrengthSavePercentage", 0),3),
+                                'goalAgainstAverage' : round(split["stat"].get("goalAgainstAverage", 0),2),
+                                'ppSavePercentage' : round(split["stat"].get("powerPlaySavePercentage", 0),1),
+                                'shSavePercentage' : round(split["stat"].get("shortHandedSavePercentage", 0),1),
+                                'evenSavePercentage' : round(split["stat"].get("evenStrengthSavePercentage", 0),1),
                                 
                                 'shotsAgainst' : split["stat"].get("shotsAgainst", 0),
                                 'goalsAgainst' : split["stat"].get("goalsAgainst", 0),

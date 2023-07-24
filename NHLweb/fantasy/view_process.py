@@ -1,5 +1,5 @@
 from .forms import InputForm, FantasyScoring, GoalieInputForm, GoalieFantasyScoring
-from .models import Player, Season, Stats, GoalieStats
+from .models import Player, Stats, GoalieStats
 from .players import get_fantasy_points, get_fantasy_goalie_points
 from django.core.exceptions import *
 
@@ -109,7 +109,7 @@ def process_goalie_request(request):
     else:
         form = GoalieInputForm()
         fant = GoalieFantasyScoring()
-        get_fantasy_points()
+        get_fantasy_goalie_points()
 
 
         

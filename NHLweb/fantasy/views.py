@@ -4,10 +4,11 @@ from django.core.paginator import Paginator
 
 from .players import reset_data
 
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.urls import reverse
 
-from .models import Player, Season, Stats, GoalieStats
+from .models import Player, Stats, GoalieStats
+from .predictions import predict
 
 from .view_process import process_player_request, process_goalie_request
 
@@ -19,7 +20,8 @@ def player_page(request):
     #Reload stats if needed. Mostly used for debugging or production
     if RELOAD_PLAYERS:
         reset_data() 
-    
+        predict()
+
     #Process the request and get information
     players, player_list, sort_column, sort_direction, form, fant = process_player_request(request)
     
@@ -107,6 +109,7 @@ def goalie_page(request):
     #Reload stats if needed. Mostly used for debugging or production
     if RELOAD_PLAYERS:
         reset_data() 
+        predict()
     
     #Process the request and get information
     players, player_list, sort_column, sort_direction, form, fant = process_goalie_request(request)
