@@ -52,12 +52,12 @@ def predict():
                 'shortHandPoints', 'hits', 'plusMinus', 'games']
             for stat_name in stat_names:
                 #Retrieve data from stats
-                y_data = [getattr(season, stat_name) for season in old_data]
+                y_data = [getattr(season, stat_name) / getattr(season, 'games') for season in old_data]
                 x_data = [i for i in range(len(y_data))]
                 x_new = [len(y_data)]
                 
                 #Make the predictions for the current season for each stat
-                prediction = make_prediction(x_data, y_data, x_new)[0]
+                prediction = make_prediction(x_data, y_data, x_new)[0] * 82.0
                 
                 #Standardize results
                 if stat_name != 'plusMinus':
@@ -88,7 +88,7 @@ def predict():
                 current_year = data[0]
 
             #Loop through all relevent stats to make predictions
-            goalie_stat_names = ['wins', 'games', 'losses', 'shutouts', 'saves', 'goalsAgainst', \
+            goalie_stat_names = ['wins', 'losses', 'shutouts', 'saves', 'goalsAgainst', \
             'goalAgainstAverage', 'savePercentage', 'ppSavePercentage', 'shSavePercentage', \
                 'evenSavePercentage']
             for stat_name in goalie_stat_names:
@@ -114,13 +114,14 @@ def predict():
                 #Set the prediction to the 2024 season
                 setattr(current_year, stat_name, prediction)
             
+            current_year.games = current_year.wins + current_year.losses
 
             updated_goalie_stats.append(current_year)
 
 
     #Update all data
     Stats.objects.bulk_update(updated_stats, stat_names + ['points'])
-    GoalieStats.objects.bulk_update(updated_goalie_stats, goalie_stat_names)
+    GoalieStats.objects.bulk_update(updated_goalie_stats, goalie_stat_names + ['games'])
 
 
 
