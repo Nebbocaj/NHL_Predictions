@@ -282,7 +282,7 @@ def create_player_stats(stat_dict):
 '''
 Calculates the fantasy points from any season based on the scoring system provided
 '''
-def get_fantasy_points(values = None):
+def get_fantasy_points(player_list, values = None):
     
     #Set the scoring values
     if values == None:
@@ -326,7 +326,8 @@ def get_fantasy_points(values = None):
     
     #Calculate score for each stat objects
     updated_stats = []
-    for stat in all_stats:
+    print(type(all_stats[0]))
+    for stat in player_list:
         stat.fantasyPoints = 0
         stat.fantasyPoints = round(games * stat.games
             + goals * stat.goals
@@ -346,13 +347,13 @@ def get_fantasy_points(values = None):
         updated_stats.append(stat)
     
     #save database
-    Stats.objects.bulk_update(updated_stats, ['fantasyPoints'])
+    return updated_stats
     
     
 '''
 Calculates the fantasy points from any season based on the scoring system provided for goalies
 '''
-def get_fantasy_goalie_points(values = None):
+def get_fantasy_goalie_points(player_list, values = None):
     
     #Set the scoring values
     if values == None:
@@ -374,25 +375,21 @@ def get_fantasy_goalie_points(values = None):
     shutouts = float(scoring["shutouts"])
     saves = float(scoring["saves"])
     goalsAgainst = float(scoring["goalsAgainst"])
-
-     
-    #Get all objects
-    all_stats = GoalieStats.objects.all()
     
     #Calculate score for each stat objects
     updated_stats = []
-    for stat in all_stats:
+    for stat in player_list:
         stat.fantasyPoints = 0
         stat.fantasyPoints = round(games * stat.games
             + wins * stat.wins
             + losses * stat.losses
             + shutouts * stat.shutouts
             + saves * stat.saves
-            + goalsAgainst * stat.goalsAgainst
+            + goalsAgainst * stat.goalsAgainst, 1
         )
         updated_stats.append(stat)
     
     #save database
-    GoalieStats.objects.bulk_update(updated_stats, ['fantasyPoints'])
+    return updated_stats
 
     
