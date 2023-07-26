@@ -69,13 +69,13 @@ YEAR_CHOICES = [
 
 #This is the form for  filtering players
 class InputForm(forms.Form):
-    year = forms.CharField(label='Season:', widget=forms.Select(choices=YEAR_CHOICES), initial='all')
+    year = forms.CharField(label='Season:', widget=forms.Select(choices=YEAR_CHOICES), initial='2023')
     team = forms.CharField(label='Team:', widget=forms.Select(choices=TEAM_CHOICES), initial='all')
     position = forms.CharField(label='Position:', widget=forms.Select(choices=POSITION_CHOICES), initial='all')
     
 #This is the form for  filtering goalies
 class GoalieInputForm(forms.Form):
-    year = forms.CharField(label='Season:', widget=forms.Select(choices=YEAR_CHOICES), initial='all')
+    year = forms.CharField(label='Season:', widget=forms.Select(choices=YEAR_CHOICES), initial='2023')
     team = forms.CharField(label='Team:', widget=forms.Select(choices=TEAM_CHOICES), initial='all')
     
 #This is the form for customizing fantasy league points

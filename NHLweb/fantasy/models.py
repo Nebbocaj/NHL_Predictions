@@ -1,6 +1,6 @@
 from django.db import models
 
-
+#Team class that contains information on all 32 teams
 class Team(models.Model):
     name = models.CharField(max_length = 50, default = "")
     division = models.CharField(max_length = 50, default = "")
@@ -11,7 +11,7 @@ class Team(models.Model):
     def __str__(self):
         return self.name
 
-# Create your models here.
+#Player class that includes non-stat information on every active player
 class Player(models.Model):
     
     #Player information
@@ -29,7 +29,8 @@ class Player(models.Model):
     
     def __str__(self):
         return self.name
-    
+
+#Season information that contains data in each season
 class Season(models.Model):
     year = models.IntegerField()
     current_season = models.BooleanField(default = False) #marks which season is the current season
@@ -37,7 +38,7 @@ class Season(models.Model):
     def __str__(self):
         return str(self.year)
     
-    
+#Table for all player statistics based on three foreign keys
 class Stats(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     season = models.ForeignKey(Season, on_delete=models.CASCADE)
@@ -76,6 +77,8 @@ class Stats(models.Model):
     def __str__(self):
         return f"{self.player.name} - {self.season.year}"
     
+
+#Table for all goalie statistics based on three foreign keys
 class GoalieStats(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     season = models.ForeignKey(Season, on_delete=models.CASCADE)
@@ -107,3 +110,83 @@ class GoalieStats(models.Model):
     toi = models.CharField(max_length = 12, default = "N/A")
     
     fantasyPoints = models.FloatField(default = 0)
+
+#Average stats for all active centers based on the year they played
+class CenterAverage(models.Model):
+    year = models.IntegerField(default = 0)
+
+    games = models.FloatField(default = 0)
+    goals = models.FloatField(default = 0)
+    assists = models.FloatField(default = 0)
+    points = models.FloatField(default = 0)
+    plusMinus = models.FloatField(default = 0)
+    pim = models.FloatField(default = 0)
+    powerPlayPoints = models.FloatField(default = 0)
+    shortHandPoints = models.FloatField(default = 0)
+    shots = models.FloatField(default = 0)
+    hits = models.FloatField(default = 0)
+    blocks = models.FloatField(default = 0)
+    shifts = models.FloatField(default = 0)
+    gameWinningGoals = models.FloatField(default = 0)
+    overtimeGoals = models.FloatField(default = 0)
+
+    def __str__(self):
+        return str(self.year)
+
+#Average stats for all active wingers based on the year they played
+class WingAverage(models.Model):
+    year = models.IntegerField(default = 0)
+    
+    games = models.FloatField(default = 0)
+    goals = models.FloatField(default = 0)
+    assists = models.FloatField(default = 0)
+    points = models.FloatField(default = 0)
+    plusMinus = models.FloatField(default = 0)
+    pim = models.FloatField(default = 0)
+    powerPlayPoints = models.FloatField(default = 0)
+    shortHandPoints = models.FloatField(default = 0)
+    shots = models.FloatField(default = 0)
+    hits = models.FloatField(default = 0)
+    blocks = models.FloatField(default = 0)
+    shifts = models.FloatField(default = 0)
+    gameWinningGoals = models.FloatField(default = 0)
+    overtimeGoals = models.FloatField(default = 0)
+
+    def __str__(self):
+        return str(self.year)
+
+#Average stats for all active defense based on the year they played
+class DefAverage(models.Model):
+    year = models.IntegerField(default = 0)
+    
+    games = models.FloatField(default = 0)
+    goals = models.FloatField(default = 0)
+    assists = models.FloatField(default = 0)
+    points = models.FloatField(default = 0)
+    plusMinus = models.FloatField(default = 0)
+    pim = models.FloatField(default = 0)
+    powerPlayPoints = models.FloatField(default = 0)
+    shortHandPoints = models.FloatField(default = 0)
+    shots = models.FloatField(default = 0)
+    hits = models.FloatField(default = 0)
+    blocks = models.FloatField(default = 0)
+    shifts = models.FloatField(default = 0)
+    gameWinningGoals = models.FloatField(default = 0)
+    overtimeGoals = models.FloatField(default = 0)
+
+    def __str__(self):
+        return str(self.year)
+
+#Average stats for all active goalies based on the year they played
+class GoalieAverage(models.Model):
+    year = models.IntegerField(default = 0)
+
+    games = models.FloatField(default = 0)
+    wins = models.FloatField(default = 0)
+    losses = models.FloatField(default = 0)
+    shutouts = models.FloatField(default = 0)
+    saves = models.FloatField(default = 0)
+    goalsAgainst = models.FloatField(default = 0)
+
+    def __str__(self):
+        return str(self.year)

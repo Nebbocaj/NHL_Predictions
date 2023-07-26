@@ -1,8 +1,9 @@
 
 import numpy as np
 from sklearn.linear_model import LinearRegression
-from .models import Player, Stats, GoalieStats
+from .models import Player, Stats, GoalieStats, CenterAverage, WingAverage, DefAverage, GoalieAverage
 
+#Make predictions on stats based off previous data
 def make_prediction(x_train, y_train, x_test):
     # Create a linear regression model
     model = LinearRegression()
@@ -30,7 +31,6 @@ def predict():
     updated_goalie_stats = []
 
     for player in Player.objects.all():
-        print(player.name, player.id_num)
 
         #For all non-goalie players
         if player.pos_code != 'G':
@@ -123,5 +123,140 @@ def predict():
     Stats.objects.bulk_update(updated_stats, stat_names + ['points'])
     GoalieStats.objects.bulk_update(updated_goalie_stats, goalie_stat_names + ['games'])
 
+
+def get_stat_averages():
+
+    #Delete all; entries to start fresh
+    center = CenterAverage.objects.all()
+    center.delete()
+    wing = WingAverage.objects.all()
+    wing.delete()
+    defence = DefAverage.objects.all()
+    defence.delete()
+    goalie = GoalieAverage.objects.all()
+    goalie.delete()
+
+    #Create empty lists of dictionaryies for the players
+    CTotals = [get_empty_totals() for i in range(25)]
+    WTotals = [get_empty_totals() for i in range(25)]
+    DTotals = [get_empty_totals() for i in range(25)]
+    GTotals = [get_empty_goalie_totals() for i in range(25)]
+
+    for player in Player.objects.all():
+        
+        if player.pos_code != 'G':
+            #Get all seasons for the specified player
+            data = list(Stats.objects.filter(player=player))[:-1]
+
+            #Append data for each player depending on their position
+            if player.pos_code == 'C':
+                CTotals = append_player(CTotals, data)
+            elif player.pos_code in ['LW', 'RW']:
+                WTotals = append_player(WTotals, data)
+            elif player.pos_code == 'D':
+                DTotals = append_player(DTotals, data)
+
+        #Handle goalie data
+        else:
+            data = list(GoalieStats.objects.filter(player=player))[:-1]
+            GTotals = append_goalie(GTotals, data)
+    
+    #Collect the average for every year and stat
+    CAverage = dict_average(CTotals)
+    WAverage = dict_average(WTotals)
+    DAverage = dict_average(DTotals)
+    GAverage = dict_average(GTotals)
+
+    #Create database entry for centers
+    count = 1
+    for entry in CAverage:
+        entry['year'] = count
+        CenterAverage.objects.create(**entry)
+        count += 1
+
+    #Create database entry for wingers
+    count = 1
+    for entry in WAverage:
+        entry['year'] = count
+        WingAverage.objects.create(**entry)
+        count += 1
+
+    #Create database entry for defense
+    count = 1
+    for entry in DAverage:
+        entry['year'] = count
+        DefAverage.objects.create(**entry)
+        count += 1
+
+    #Create database entry for defense
+    count = 1
+    for entry in GAverage:
+        entry['year'] = count
+        GoalieAverage.objects.create(**entry)
+        count += 1
+
+
+#Get an empty dictionary for players
+def get_empty_totals():
+    return {'goals' : [],'assists' : [],'pim' : [],
+            'shots' : [],'games' : [],'hits' : [],
+            'blocks' : [],'plusMinus' : [],'points' : [],
+            'shifts' : [],'powerPlayPoints' : [],
+            'shortHandPoints' : [],'gameWinningGoals' : [],
+            'overtimeGoals' : []}
+
+
+#Get an empty dictionary for goalies
+def get_empty_goalie_totals():
+    return {'games': [], 'wins': [], 'losses': [], 'shutouts': [], 
+            'saves': [], 'goalsAgainst': []}
+         
+                
+#Appends all player data into the totals dictionary
+def append_player(totals, data):
+    count = 0
+    for entry in data:
+        totals[count]['games'].append(entry.games)
+        totals[count]['goals'].append(entry.goals / entry.games) 
+        totals[count]['assists'].append(entry.assists / entry.games) 
+        totals[count]['points'].append(entry.points / entry.games) 
+        totals[count]['plusMinus'].append(entry.plusMinus / entry.games) 
+        totals[count]['pim'].append(entry.pim / entry.games) 
+        totals[count]['powerPlayPoints'].append(entry.powerPlayPoints / entry.games)  
+        totals[count]['shortHandPoints'].append(entry.shortHandPoints / entry.games) 
+        totals[count]['shots'].append(entry.shots / entry.games) 
+        totals[count]['hits'].append(entry.hits / entry.games) 
+        totals[count]['blocks'].append(entry.blocks / entry.games) 
+        totals[count]['shifts'].append(entry.shifts / entry.games) 
+        totals[count]['gameWinningGoals'].append(entry.gameWinningGoals / entry.games) 
+        totals[count]['overtimeGoals'].append(entry.overtimeGoals / entry.games) 
+        count += 1
+
+    return totals
+
+#Appends all goalie data into the totals dictionary
+def append_goalie(totals, data):
+    count = 0
+    for entry in data:
+        totals[count]['games'].append(entry.games)
+        totals[count]['wins'].append(entry.wins / entry.games)
+        totals[count]['losses'].append(entry.losses / entry.games)
+        totals[count]['shutouts'].append(entry.shutouts / entry.games)
+        totals[count]['saves'].append(entry.saves / entry.games)
+        totals[count]['goalsAgainst'].append(entry.goalsAgainst / entry.games)
+
+        count += 1
+
+    return totals
+
+#Get the average value of each key ina  list of dictionaries
+def dict_average(totals):
+    averages = [{} for i in range(25)]
+    count = 0
+    for year in totals:
+        for key in year:
+            averages[count][key] = round(sum(totals[count][key]) / (len(totals[count][key]) + 0.000000001),3)
+        count += 1
+    return averages
 
 

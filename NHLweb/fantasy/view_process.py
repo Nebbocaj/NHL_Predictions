@@ -9,7 +9,7 @@ def process_player_request(request):
     #Add filters to position or team
     team = 'all'
     position = 'all'
-    season = 'all'
+    season = '2023'
     if request.method == 'POST':
         
         #Gather filter form data
@@ -45,7 +45,6 @@ def process_player_request(request):
         player_list = player_list.filter(player__pos_code=position)
     
     player_list = player_list.order_by(f"{prefix}{sort_column}")
-    print(player_list[0].fantasyPoints)
     
     players = Player.objects.all()
 
@@ -84,7 +83,7 @@ def process_goalie_request(request):
     #If the request comes from the "filter" method in the html
     #Add filters to position or team
     team = 'all'
-    season = 'all'
+    season = '2023'
     if request.method == 'POST':
         
         #Gather filter form data

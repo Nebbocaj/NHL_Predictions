@@ -320,13 +320,9 @@ def get_fantasy_points(player_list, values = None):
     shifts = float(scoring["shifts"])
     gwg = float(scoring["gwg"])
     otg = float(scoring["otg"])
-     
-    #Get all objects
-    all_stats = Stats.objects.all()
     
     #Calculate score for each stat objects
     updated_stats = []
-    print(type(all_stats[0]))
     for stat in player_list:
         stat.fantasyPoints = 0
         stat.fantasyPoints = round(games * stat.games
