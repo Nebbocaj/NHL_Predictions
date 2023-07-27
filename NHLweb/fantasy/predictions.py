@@ -31,29 +31,32 @@ def predict():
     updated_stats = []
     updated_goalie_stats = []
 
-    averages = CenterAverage.objects.all()
-    for ave in averages:
-        print(getattr(ave, 'goals'))
+    CAverage = CenterAverage.objects.all()
+    WAverage = WingAverage.objects.all()
+    DAverage = DefAverage.objects.all()
+    GAverage = GoalieAverage.objects.all()
+
+    #averages = CenterAverage.objects.all()
+    #print(getattr(averages[3], 'goals'))
 
     for player in Player.objects.all():
 
         #For all non-goalie players
         if player.pos_code != 'G':
             stat_names = ['goals', 'assists', 'blocks', 'shots', 'pim', 'powerPlayPoints', \
-                        'shortHandPoints', 'hits', 'plusMinus', 'games']
-            updated_stats = predict_player(player, updated_stats, stat_names, 0)
+                        'shortHandPoints', 'hits', 'plusMinus']
+            updated_stats = predict_player(player, updated_stats, stat_names, 0, CAverage, WAverage, DAverage, GAverage)
             
 
         elif player.pos_code == 'G':
             goalie_stat_names = ['wins', 'losses', 'shutouts', 'saves', 'goalsAgainst', \
-            'goalAgainstAverage', 'savePercentage', 'ppSavePercentage', 'shSavePercentage', \
-                'evenSavePercentage', 'ot']
-            updated_goalie_stats = predict_player(player, updated_goalie_stats, goalie_stat_names, 1)
+             'savePercentage', 'ot']
+            updated_goalie_stats = predict_player(player, updated_goalie_stats, goalie_stat_names, 1, CAverage, WAverage, DAverage, GAverage)
             
 
 
     #Update all data
-    Stats.objects.bulk_update(updated_stats, stat_names + ['points'])
+    Stats.objects.bulk_update(updated_stats, stat_names + ['points', 'games'])
     GoalieStats.objects.bulk_update(updated_goalie_stats, goalie_stat_names + ['games'])
 
     player_list = GoalieStats.objects.all()
@@ -63,7 +66,10 @@ def predict():
     get_fantasy_points(player_list, saveTable = True)
 
 
-def predict_player(player, updated_stats, stat_names, state):
+def predict_player(player, updated_stats, stat_names, state, CAverage, WAverage, DAverage, GAverage):
+
+    year_param = 8
+
     #Get all seasons for the specified player
     if state == 0:
         data = list(Stats.objects.filter(player=player))
@@ -80,22 +86,47 @@ def predict_player(player, updated_stats, stat_names, state):
         old_data = data
         current_year = data[0]
 
+    veteran = False
+    if len(old_data) > year_param:
+        old_data = old_data[-year_param:]
+        veteran = True
+
     #Loop through all relevent stats to make predictions
     for stat_name in stat_names:
         #Retrieve data from stats
         if state == 0:
-            y_data = [getattr(season, stat_name) / getattr(season, 'games') for season in old_data]
+            
+            if veteran:
+                y_data = [getattr(old_data[y], stat_name) / (getattr(old_data[y], 'games') + 0.00001) for y in range(len(old_data))]
+
+            else:
+                if player.pos_code == 'C':
+                    y_data = [getattr(old_data[y], stat_name) / (getattr(old_data[y], 'games') + 0.00001) - getattr(CAverage[y], stat_name) for y in range(len(old_data))]
+                elif player.pos_code in ['LW', 'RW']:
+                    y_data = [getattr(old_data[y], stat_name) / (getattr(old_data[y], 'games') + 0.00001) - getattr(WAverage[y], stat_name) for y in range(len(old_data))]
+                elif player.pos_code == 'D':
+                    y_data = [getattr(old_data[y], stat_name) / (getattr(old_data[y], 'games') + 0.00001) - getattr(DAverage[y], stat_name) for y in range(len(old_data))]
         else:
-            y_data = [getattr(season, stat_name) for season in old_data]
+            if veteran:
+                y_data = [getattr(old_data[y], stat_name) for y in range(len(old_data))]
+            else:
+                y_data = [getattr(old_data[y], stat_name) - getattr(GAverage[y], stat_name) for y in range(len(old_data))]
         x_data = [i for i in range(len(y_data))]
         x_new = [len(y_data)]
         
         #Make the predictions for the current season for each stat
         if state == 0:
-            prediction = make_prediction(x_data, y_data, x_new)[0] * 82.0
+            if veteran:
+                prediction = make_prediction(x_data, y_data, x_new)[0] * 82.0
+            else:
+                prediction = make_prediction(x_data, y_data, x_new)[0] 
+                prediction = (prediction + getattr(CAverage[len(old_data)], stat_name)) * 82.0
         else:
-            prediction = make_prediction(x_data, y_data, x_new)[0]
-        
+            if veteran:
+                prediction = make_prediction(x_data, y_data, x_new)[0]
+            else:
+                prediction = make_prediction(x_data, y_data, x_new)[0] 
+                prediction = (prediction + getattr(GAverage[len(old_data)], stat_name))
         #Standardize results
         if state == 0:
             if stat_name != 'plusMinus':
@@ -116,6 +147,7 @@ def predict_player(player, updated_stats, stat_names, state):
     #Further normalize data by adding restrictions
     if state == 0:
         current_year.points = current_year.goals + current_year.assists
+        current_year.games = 82
     else:
         total_games = current_year.wins + current_year.losses + current_year.ot
         #Implement a max goalie games of 64
@@ -130,6 +162,7 @@ def predict_player(player, updated_stats, stat_names, state):
             current_year.shutouts = current_year.shutouts * ratio
             current_year.saves = current_year.saves * ratio
             current_year.goalsAgainst = current_year.goalsAgainst * ratio
+        current_year.savePercentage = round(current_year.saves / (current_year.saves + current_year.goalsAgainst + 0.00001),3)
 
 
     updated_stats.append(current_year)
@@ -222,7 +255,7 @@ def get_empty_totals():
 #Get an empty dictionary for goalies
 def get_empty_goalie_totals():
     return {'games': [], 'wins': [], 'losses': [], 'shutouts': [], 
-            'saves': [], 'goalsAgainst': []}
+            'saves': [], 'goalsAgainst': [], 'savePercentage': [], 'ot': []}
          
                 
 #Appends all player data into the totals dictionary
@@ -257,6 +290,8 @@ def append_goalie(totals, data):
         totals[count]['shutouts'].append(entry.shutouts / entry.games)
         totals[count]['saves'].append(entry.saves / entry.games)
         totals[count]['goalsAgainst'].append(entry.goalsAgainst / entry.games)
+        totals[count]['savePercentage'].append(entry.savePercentage / entry.games)
+        totals[count]['ot'].append(entry.ot / entry.games)
 
         count += 1
 

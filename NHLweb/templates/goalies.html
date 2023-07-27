@@ -49,8 +49,6 @@
             <th><a href="#" onclick="submitForm('?page=1&sort=goalsAgainst&dir={% if sort_column == 'goalsAgainst' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">GA</a></th>
             <th><a href="#" onclick="submitForm('?page=1&sort=goalAgainstAverage&dir={% if sort_column == 'goalAgainstAverage' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">GAA</a></th>
             <th><a href="#" onclick="submitForm('?page=1&sort=savePercentage&dir={% if sort_column == 'savePercentage' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">S%</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=ppSavePercentage&dir={% if sort_column == 'ppSavePercentage' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">PP S%</a></th>
-            <th><a href="#" onclick="submitForm('?page=1&sort=shSavePercentage&dir={% if sort_column == 'shSavePercentage' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">SH S%</a></th>
             <th><a href="#" onclick="submitForm('?page=1&sort=fantasyPoints&dir={% if sort_column == 'fantasyPoints' and sort_direction == 'desc'%}asc{% else %}desc{% endif %}')">Fantasy PTS</a></th>
 
         </tr>
@@ -70,8 +68,6 @@
                 <td>{{stat.goalsAgainst}}</td>
                 <td>{{stat.goalAgainstAverage}}</td>
                 <td>{{stat.savePercentage}}</td>
-                <td>{{stat.ppSavePercentage}}</td>
-                <td>{{stat.shSavePercentage}}</td>
                 <td>{{stat.fantasyPoints}}</td>
                 
                 

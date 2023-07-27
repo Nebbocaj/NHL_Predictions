@@ -187,6 +187,8 @@ class GoalieAverage(models.Model):
     shutouts = models.FloatField(default = 0)
     saves = models.FloatField(default = 0)
     goalsAgainst = models.FloatField(default = 0)
+    savePercentage = models.FloatField(default = 0)
+    ot = models.FloatField(default = 0)
 
     def __str__(self):
         return str(self.year)
