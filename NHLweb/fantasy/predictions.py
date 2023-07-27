@@ -2,6 +2,7 @@
 import numpy as np
 from sklearn.linear_model import LinearRegression
 from .models import Player, Stats, GoalieStats, CenterAverage, WingAverage, DefAverage, GoalieAverage
+from .players import get_fantasy_goalie_points, get_fantasy_points
 
 #Make predictions on stats based off previous data
 def make_prediction(x_train, y_train, x_test):
@@ -30,98 +31,110 @@ def predict():
     updated_stats = []
     updated_goalie_stats = []
 
+    averages = CenterAverage.objects.all()
+    for ave in averages:
+        print(getattr(ave, 'goals'))
+
     for player in Player.objects.all():
 
         #For all non-goalie players
         if player.pos_code != 'G':
-
-            #Get all seasons for the specified player
-            data = list(Stats.objects.filter(player=player))
-
-            #If there is enough data to learn from, use it
-            #If not, add dummy data of 0
-            if len(data) > 1:
-                old_data = data[:-1]
-                current_year = data[-1]
-            else:
-                old_data = data
-                current_year = data[0]
-
-            #Loop through all relevent stats to make predictions
             stat_names = ['goals', 'assists', 'blocks', 'shots', 'pim', 'powerPlayPoints', \
-                'shortHandPoints', 'hits', 'plusMinus', 'games']
-            for stat_name in stat_names:
-                #Retrieve data from stats
-                y_data = [getattr(season, stat_name) / getattr(season, 'games') for season in old_data]
-                x_data = [i for i in range(len(y_data))]
-                x_new = [len(y_data)]
-                
-                #Make the predictions for the current season for each stat
-                prediction = make_prediction(x_data, y_data, x_new)[0] * 82.0
-                
-                #Standardize results
-                if stat_name != 'plusMinus':
-                    prediction = max(prediction, 0)
-                if stat_name == 'games':
-                    prediction = min(prediction, 82)
-
-                #Set the prediction to the 2024 season
-                setattr(current_year, stat_name, prediction)
-                
-
-            #Predict points by adding goals and asissts
-            current_year.points = current_year.goals + current_year.assists
-
-            updated_stats.append(current_year)
+                        'shortHandPoints', 'hits', 'plusMinus', 'games']
+            updated_stats = predict_player(player, updated_stats, stat_names, 0)
+            
 
         elif player.pos_code == 'G':
-            #Get all seasons for the specified player
-            data = list(GoalieStats.objects.filter(player=player))
-
-            #If there is enough data to learn from, use it
-            #If not, add dummy data of 0
-            if len(data) > 1:
-                old_data = data[:-1]
-                current_year = data[-1]
-            else:
-                old_data = data
-                current_year = data[0]
-
-            #Loop through all relevent stats to make predictions
             goalie_stat_names = ['wins', 'losses', 'shutouts', 'saves', 'goalsAgainst', \
             'goalAgainstAverage', 'savePercentage', 'ppSavePercentage', 'shSavePercentage', \
-                'evenSavePercentage']
-            for stat_name in goalie_stat_names:
-                #Retrieve data from stats
-                y_data = [getattr(season, stat_name) for season in old_data]
-                x_data = [i for i in range(len(y_data))]
-                x_new = [len(y_data)]
-                
-                #Make the predictions for the current season for each stat
-                prediction = make_prediction(x_data, y_data, x_new)[0]
-
-                #Standardize results
-                prediction = max(prediction, 0.0)
-                if stat_name == 'games':
-                    prediction = min(prediction, 82.0)
-                elif stat_name == 'savePercentage':
-                    prediction = round(prediction, 3)
-                elif stat_name == 'goalAgainstAverage':
-                    prediction = round(prediction, 2)
-                elif stat_name in ['ppSavePercentage', 'shSavePercentage', 'evenSavePercentage']:
-                    prediction = round(prediction, 1)
-
-                #Set the prediction to the 2024 season
-                setattr(current_year, stat_name, prediction)
+                'evenSavePercentage', 'ot']
+            updated_goalie_stats = predict_player(player, updated_goalie_stats, goalie_stat_names, 1)
             
-            current_year.games = current_year.wins + current_year.losses
-
-            updated_goalie_stats.append(current_year)
 
 
     #Update all data
     Stats.objects.bulk_update(updated_stats, stat_names + ['points'])
     GoalieStats.objects.bulk_update(updated_goalie_stats, goalie_stat_names + ['games'])
+
+    player_list = GoalieStats.objects.all()
+    get_fantasy_goalie_points(player_list, saveTable = True)
+
+    player_list = Stats.objects.all()
+    get_fantasy_points(player_list, saveTable = True)
+
+
+def predict_player(player, updated_stats, stat_names, state):
+    #Get all seasons for the specified player
+    if state == 0:
+        data = list(Stats.objects.filter(player=player))
+    else:
+        data = list(GoalieStats.objects.filter(player=player))
+
+
+    #If there is enough data to learn from, use it
+    #If not, add dummy data of 0
+    if len(data) > 1:
+        old_data = data[:-1]
+        current_year = data[-1]
+    else:
+        old_data = data
+        current_year = data[0]
+
+    #Loop through all relevent stats to make predictions
+    for stat_name in stat_names:
+        #Retrieve data from stats
+        if state == 0:
+            y_data = [getattr(season, stat_name) / getattr(season, 'games') for season in old_data]
+        else:
+            y_data = [getattr(season, stat_name) for season in old_data]
+        x_data = [i for i in range(len(y_data))]
+        x_new = [len(y_data)]
+        
+        #Make the predictions for the current season for each stat
+        if state == 0:
+            prediction = make_prediction(x_data, y_data, x_new)[0] * 82.0
+        else:
+            prediction = make_prediction(x_data, y_data, x_new)[0]
+        
+        #Standardize results
+        if state == 0:
+            if stat_name != 'plusMinus':
+                prediction = max(prediction, 0)
+        else:
+            prediction = max(prediction, 0.0)
+            if stat_name == 'savePercentage':
+                prediction = round(prediction, 3)
+            elif stat_name == 'goalAgainstAverage':
+                prediction = round(prediction, 2)
+            elif stat_name in ['ppSavePercentage', 'shSavePercentage', 'evenSavePercentage']:
+                prediction = round(prediction, 1)
+
+        #Set the prediction to the 2024 season
+        setattr(current_year, stat_name, prediction)
+        
+
+    #Further normalize data by adding restrictions
+    if state == 0:
+        current_year.points = current_year.goals + current_year.assists
+    else:
+        total_games = current_year.wins + current_year.losses + current_year.ot
+        #Implement a max goalie games of 64
+        if  total_games > 64:
+            ratio = 64 / total_games
+            win_ratio = current_year.wins / total_games
+            loss_ratio = current_year.losses / total_games
+            current_year.games = 64
+            current_year.wins = int(current_year.games * win_ratio)
+            current_year.losses = int(current_year.games * loss_ratio)
+            current_year.ot = current_year.games - current_year.wins - current_year.losses
+            current_year.shutouts = current_year.shutouts * ratio
+            current_year.saves = current_year.saves * ratio
+            current_year.goalsAgainst = current_year.goalsAgainst * ratio
+
+
+    updated_stats.append(current_year)
+
+    return updated_stats
 
 
 def get_stat_averages():

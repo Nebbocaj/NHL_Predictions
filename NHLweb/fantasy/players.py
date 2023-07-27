@@ -282,7 +282,7 @@ def create_player_stats(stat_dict):
 '''
 Calculates the fantasy points from any season based on the scoring system provided
 '''
-def get_fantasy_points(player_list, values = None):
+def get_fantasy_points(player_list, values = None, saveTable = False):
     
     #Set the scoring values
     if values == None:
@@ -343,13 +343,15 @@ def get_fantasy_points(player_list, values = None):
         updated_stats.append(stat)
     
     #save database
+    if saveTable:
+        Stats.objects.bulk_update(updated_stats, ['fantasyPoints'])
     return updated_stats
     
     
 '''
 Calculates the fantasy points from any season based on the scoring system provided for goalies
 '''
-def get_fantasy_goalie_points(player_list, values = None):
+def get_fantasy_goalie_points(player_list, values = None, saveTable = False):
     
     #Set the scoring values
     if values == None:
@@ -357,6 +359,7 @@ def get_fantasy_goalie_points(player_list, values = None):
             'games': 0,
             'wins': 4,
             'losses': 0,
+            'otl': 1,
             'shutouts': 3,
             'saves': 0.2,
             'goalsAgainst': -2,
@@ -368,6 +371,7 @@ def get_fantasy_goalie_points(player_list, values = None):
     games = float(scoring["games"])
     wins = float(scoring["wins"])
     losses = float(scoring["losses"])
+    ot = float(scoring["otl"])
     shutouts = float(scoring["shutouts"])
     saves = float(scoring["saves"])
     goalsAgainst = float(scoring["goalsAgainst"])
@@ -379,6 +383,7 @@ def get_fantasy_goalie_points(player_list, values = None):
         stat.fantasyPoints = round(games * stat.games
             + wins * stat.wins
             + losses * stat.losses
+            + ot * stat.ot
             + shutouts * stat.shutouts
             + saves * stat.saves
             + goalsAgainst * stat.goalsAgainst, 1
@@ -386,6 +391,8 @@ def get_fantasy_goalie_points(player_list, values = None):
         updated_stats.append(stat)
     
     #save database
+    if saveTable:
+        GoalieStats.objects.bulk_update(updated_stats, ['fantasyPoints'])
     return updated_stats
 
     

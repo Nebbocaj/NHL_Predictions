@@ -7,7 +7,7 @@ from .players import reset_data
 from django.shortcuts import redirect
 from django.urls import reverse
 
-from .models import Player, Stats, GoalieStats, CenterAverage
+from .models import Player, Stats, GoalieStats
 from .predictions import predict, get_stat_averages
 
 from .view_process import process_player_request, process_goalie_request

@@ -125,6 +125,7 @@ def process_goalie_request(request):
             'games': request.POST.get('games', 0),
             'wins': request.POST.get('wins', 0),
             'losses': request.POST.get('losses', 0),
+            'otl': request.POST.get('otl', 0), 
             'shutouts': request.POST.get('shutouts', 0),
             'saves': request.POST.get('saves', 0),
             'goalsAgainst' : request.POST.get('goalsAgainst', 0),

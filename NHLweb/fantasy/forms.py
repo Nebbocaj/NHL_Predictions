@@ -101,6 +101,7 @@ class GoalieFantasyScoring(forms.Form):
     games = forms.IntegerField(label='GP:', initial=0, widget=forms.NumberInput(attrs={'class': 'small-input'}))
     wins = forms.IntegerField(label='W:', initial=4, widget=forms.NumberInput(attrs={'class': 'small-input'}))
     losses = forms.IntegerField(label='L:', initial=0, widget=forms.NumberInput(attrs={'class': 'small-input'}))
+    otl = forms.IntegerField(label='OTL:', initial=1, widget=forms.NumberInput(attrs={'class': 'small-input'}))
     shutouts = forms.IntegerField(label='SO:', initial=3, widget=forms.NumberInput(attrs={'class': 'small-input'}))
     saves = forms.IntegerField(label='Saves:', initial=0.2, widget=forms.NumberInput(attrs={'class': 'small-input'}))
     goalsAgainst = forms.IntegerField(label='GA:', initial=-2, widget=forms.NumberInput(attrs={'class': 'small-input'}))
