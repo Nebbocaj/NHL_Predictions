@@ -1,3 +1,8 @@
+'''
+Page that codes all of the view details for every page in the fantasy app.
+'''
+
+
 from django.http import HttpResponse
 from django.template import loader
 from django.core.paginator import Paginator
@@ -14,7 +19,11 @@ from .view_process import process_player_request, process_goalie_request
 
 RELOAD_PLAYERS = False
 
-#View function for the player page
+'''
+View function for the main player page
+
+request: the url details taken from urls.py
+'''
 def player_page(request):
     
     #Reload stats if needed. Mostly used for debugging or production
@@ -48,7 +57,11 @@ def player_page(request):
     
 
 
-#View function for the goalie page
+'''
+View function for the main goalie page
+
+request: the url details taken from urls.py
+'''
 def goalie_page(request):
     
     #Reload stats if needed. Mostly used for debugging or production
@@ -82,7 +95,12 @@ def goalie_page(request):
 
 
 
-#Get the player detail page that shows player stats
+'''
+The individual player page that shows all of a player's details
+
+request: the url details taken from urls.py
+id_num: The nhl api id number for a player
+'''
 def player_details(request, id_num):
     
     #If this is gotten to by search, handle the inputs and redirect to proper page
@@ -125,7 +143,12 @@ def player_details(request, id_num):
 
 
 
-#Get the goalie details page for indiovidual goalies
+'''
+The individual goalie page that shows all of a player's details
+
+request: the url details taken from urls.py
+id_num: The nhl api id number for a player
+'''
 def goalie_details(request, id_num):
     
     person = Player.objects.filter(id_num=id_num)[0]

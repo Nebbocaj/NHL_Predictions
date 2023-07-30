@@ -1,3 +1,7 @@
+'''
+Handles any functiosn related to updating players data in the databases 
+'''
+
 import requests
 import pandas as pd
 import numpy as np
@@ -281,6 +285,10 @@ def create_player_stats(stat_dict):
 
 '''
 Calculates the fantasy points from any season based on the scoring system provided
+
+player_list: the list of all stat objects
+values: stat weights from form completion on main page. Defaults if none
+saveTable: choose to save the table or just return values
 '''
 def get_fantasy_points(player_list, values = None, saveTable = False):
     
@@ -350,6 +358,10 @@ def get_fantasy_points(player_list, values = None, saveTable = False):
     
 '''
 Calculates the fantasy points from any season based on the scoring system provided for goalies
+
+player_list: the list of all stat objects
+values: stat weights from form completion on main page. Defaults if none
+saveTable: choose to save the table or just return values
 '''
 def get_fantasy_goalie_points(player_list, values = None, saveTable = False):
     

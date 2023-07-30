@@ -1,10 +1,22 @@
+'''
+All functions related to predicting player information
+for upcoming seasons.
+'''
 
 import numpy as np
 from sklearn.linear_model import LinearRegression
 from .models import Player, Stats, GoalieStats, CenterAverage, WingAverage, DefAverage, GoalieAverage
 from .players import get_fantasy_goalie_points, get_fantasy_points
 
-#Make predictions on stats based off previous data
+'''
+Make predictions on stats based off previous data using linear regression
+
+x_train: A vector of size "years played" that has the form [1,2,3,...]
+y_train: The main dataset with a players information
+x_test: the year that needs to be predicted
+
+returns: the preeicted value of stats for the upcoming year.
+'''
 def make_prediction(x_train, y_train, x_test):
     # Create a linear regression model
     model = LinearRegression()
@@ -24,8 +36,10 @@ def make_prediction(x_train, y_train, x_test):
 
     return y_pred
 
-
-#Make the predictions for the 2024 season
+'''
+#Make the predictions for the 2024 season. This is called from the main views
+when needed
+'''
 def predict():
 
     updated_stats = []
@@ -35,9 +49,6 @@ def predict():
     WAverage = WingAverage.objects.all()
     DAverage = DefAverage.objects.all()
     GAverage = GoalieAverage.objects.all()
-
-    #averages = CenterAverage.objects.all()
-    #print(getattr(averages[3], 'goals'))
 
     for player in Player.objects.all():
 
@@ -59,13 +70,23 @@ def predict():
     Stats.objects.bulk_update(updated_stats, stat_names + ['points', 'games'])
     GoalieStats.objects.bulk_update(updated_goalie_stats, goalie_stat_names + ['games'])
 
+    #update fantasy points and save the tables
     player_list = GoalieStats.objects.all()
     get_fantasy_goalie_points(player_list, saveTable = True)
-
     player_list = Stats.objects.all()
     get_fantasy_points(player_list, saveTable = True)
 
+'''
+Makes all predictions for a single player. 
 
+Player: The player object
+updated_stats: The current stats up until function call
+stat_names: The stats that need to be predicted
+state: 0 for skater, 1 for goalie
+Averages: The average stats for each position type by year
+
+Returns the updated stats which include all players information up to the specified point
+'''
 def predict_player(player, updated_stats, stat_names, state, CAverage, WAverage, DAverage, GAverage):
 
     year_param = 8
@@ -170,6 +191,9 @@ def predict_player(player, updated_stats, stat_names, state, CAverage, WAverage,
     return updated_stats
 
 
+'''
+Get the averages of stats for each position by year
+'''
 def get_stat_averages():
 
     #Delete all; entries to start fresh
@@ -241,8 +265,9 @@ def get_stat_averages():
         GoalieAverage.objects.create(**entry)
         count += 1
 
-
-#Get an empty dictionary for players
+'''
+Get an empty dictionary for players
+'''
 def get_empty_totals():
     return {'goals' : [],'assists' : [],'pim' : [],
             'shots' : [],'games' : [],'hits' : [],
@@ -251,14 +276,21 @@ def get_empty_totals():
             'shortHandPoints' : [],'gameWinningGoals' : [],
             'overtimeGoals' : []}
 
-
-#Get an empty dictionary for goalies
+'''
+Get an empty dictionary for goalies
+'''
 def get_empty_goalie_totals():
     return {'games': [], 'wins': [], 'losses': [], 'shutouts': [], 
             'saves': [], 'goalsAgainst': [], 'savePercentage': [], 'ot': []}
          
-                
-#Appends all player data into the totals dictionary
+'''            
+Appends all player data into the totals dictionary
+
+totals: a dictionary of individual lists for all player's stats in a given position and a given year
+data: a Stat objects from a given player
+
+returns updated totals dictionary
+'''
 def append_player(totals, data):
     count = 0
     for entry in data:
@@ -280,7 +312,14 @@ def append_player(totals, data):
 
     return totals
 
-#Appends all goalie data into the totals dictionary
+'''            
+Appends all goalie data into the totals dictionary
+
+totals: a dictionary of individual lists for all player's stats in a given year
+data: a Stat objects from a given player
+
+returns updated totals dictionary
+'''
 def append_goalie(totals, data):
     count = 0
     for entry in data:

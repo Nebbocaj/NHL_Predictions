@@ -1,3 +1,8 @@
+'''
+The url function that stores all urls 
+and passes information tot he views.py file
+'''
+
 from django.urls import path
 
 from . import views

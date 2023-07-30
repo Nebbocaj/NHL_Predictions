@@ -1,9 +1,19 @@
+'''
+An extention of views.py that covers all of the specific details and variables for 
+processing the main pages
+'''
+
+
 from .forms import InputForm, FantasyScoring, GoalieInputForm, GoalieFantasyScoring
 from .models import Player, Stats, GoalieStats
 from .players import get_fantasy_points, get_fantasy_goalie_points
 from django.core.exceptions import *
 
-#Process the request that the player page recieves
+'''
+Process the request that the player page recieves
+
+request: the url details taken from urls.py
+'''
 def process_player_request(request):
     #If the request comes from the "filter" method in the html
     #Add filters to position or team
@@ -78,7 +88,13 @@ def process_player_request(request):
     
     return players, player_list, sort_column, sort_direction, form, fant
 
-#Process the request that the player page recieves
+
+
+'''
+Process the request that the goalie page recieves
+
+request: the url details taken from urls.py
+'''
 def process_goalie_request(request):
     #If the request comes from the "filter" method in the html
     #Add filters to position or team
